@@ -138,7 +138,11 @@ void RollImage::loadGreenChannel(int threshold) {
 	setThreshold(threshold);
 	ulongint rows = getRows();
 	ulongint cols = getCols();
-	this->getImageGreenChannel(monochrome);
+	if (!m_isMonochrome) {
+		this->getImageGreenChannel(monochrome);
+        } else {
+		this->getImageChannel(monochrome);
+	}
 	pixelType.resize(rows);
 	for (ulongint r=0; r<rows; r++) {
 		pixelType[r].resize(getCols());
