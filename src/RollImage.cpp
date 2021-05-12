@@ -64,6 +64,7 @@ void RollImage::clear(void) {
 	m_dustscorebass             = -1.0;
 	m_dustscoretreble           = -1.0;
 	m_averageHoleWidth          = -1.0;
+	m_isMonochrome              = false; 
 }
 
 
@@ -113,6 +114,16 @@ string RollImage::my_to_string(int value) {
 	stringstream stream;
 	stream << value;
 	return stream.str();
+}
+
+
+
+//////////////////////////////
+//
+// RollImage::setMonochrome 
+//
+void RollImage::setMonochrome(bool value) {
+	m_isMonochrome = value;
 }
 
 
