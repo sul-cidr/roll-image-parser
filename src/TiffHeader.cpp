@@ -78,6 +78,7 @@ void TiffHeader::clear(void) {
 	m_64bitQ          = false;
 	m_samplesperpixel = 0;
 
+	m_allowMonochrome = true;
 
 	// clear file offsets:
 	m_samplesperpixel_offset = 0;
@@ -499,7 +500,7 @@ bool TiffHeader::readDirectoryEntry(std::fstream& input) {
 		case 262: // photometric interpretation
 			// Shouldn't be needed, require to be 2: 0,0,0=black 255,255,255=white
 			value = (ulongint)this->readEntryUInteger(input, datatype, count, id);
-			if (value != 2) {
+			if ((value != 2) && (value != 1)) {
 				std::cerr << "Cannot handle photometric interpretation " << value << "." << std::endl;
 				return false;
 			}
