@@ -459,7 +459,7 @@ void RollImage::calculateHoleDescriptors(void) {
 			continue;
 		}
 		holes[i]->circularity = 4 * M_PI * holes[i]->area /
-			holes[i]->perimeter / holes[i]->perimeter;
+		holes[i]->perimeter / holes[i]->perimeter;
 		holes[i]->majoraxis = calculateMajorAxis(*holes[i]);
 	}
 }
@@ -472,6 +472,8 @@ void RollImage::calculateHoleDescriptors(void) {
 //
 
 void RollImage::assignMidiKeyNumbersToHoles(void) {
+	// Initialize tracker hole -> midi number mapping
+
 	for (int i=0; i<(int)midiToTrackMapping.size(); i++) {
 		int track = midiToTrackMapping[i];
 		if (track <= 0) {
@@ -504,7 +506,6 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 			continue;
 		}
 		midiKey[i] = trackerArray[i][0]->midikey;
-		firstHole[i] = trackerArray[i][0]->origin.first;
 
 		if (firstHole[i] > maxorigin) {
 			maxorigin = firstHole[i];
@@ -761,10 +762,9 @@ void RollImage::analyzeMidiKeyMapping(void) {
 
 	double lefttarget = leftMarginIndex[r];
 	// Convert to corrected horizontal position:
-   lefttarget += driftCorrection[r];
+	lefttarget += driftCorrection[r];
 	// Move to the treble by the expected bass margin:
 	lefttarget += getMinTrackerEdge() * holeSeparation;
-
 
 	// Now find the position that best fits that predicted position of 
 	// the first bass hole position:
@@ -779,15 +779,26 @@ void RollImage::analyzeMidiKeyMapping(void) {
 		}
 	}
 
+	//PMB temporary fix for Welte red rolls
+	if ((m_rollType == "welte-red") && (position.size() <= 108)) {
+		leftmostIndex += 1;
+		std::cerr << "shifting leftmostIndex for red Welte roll to " << leftmostIndex << std::endl;
+	}
+
 	// Initialize the MIDI-to-track mapping:
 	midiToTrackMapping.resize(128);
 	std::fill(midiToTrackMapping.begin(), midiToTrackMapping.end(), 0);
+
+	// Initialize the track-to-MIDI mapping:
+	trackToMidiMapping.resize(128);
+	std::fill(trackToMidiMapping.begin(), trackToMidiMapping.end(), 0);
 
 	// Assign MIDI key positions to the mapping, starting with
 	// the first position.
 	int count = m_treble_midi - m_bass_midi + 1;
 	for (int i=0; i<count; i++) {
 		midiToTrackMapping.at(i+m_bass_midi) = i+leftmostIndex;
+		trackToMidiMapping.at(i+leftmostIndex) = i+m_bass_midi;
 	}
 
 	// int trackerholes = getMeasuredTrackerHoleCount();
@@ -1066,7 +1077,7 @@ void RollImage::analyzeRawRowPositions(void) {
 	rrp.resize(0);
 
 	std::vector<int>& cch = correctedCentroidHistogram;
-	for (uint i=0; i<cch.size(); i++) {
+	for (int i=0; i<cch.size(); i++) {
 		if (cch[i] == 0) {
 			continue;
 		}
@@ -4871,9 +4882,12 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@\n";
 	out << "\n";
 
+	assignMidiKeyNumbersToHoles();
+
 	out << "@@BEGIN: HOLES\n\n";
 	for (ulongint i=0; i<holes.size(); i++) {
 		if (holes.at(i)->isMusicHole()) {
+			holes.at(i)->midikey = trackToMidiMapping[holes.at(i)->track];
 			holes.at(i)->printAton(out);
 			out << std::endl;
 		}
