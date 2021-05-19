@@ -64,6 +64,7 @@ void RollImage::clear(void) {
 	m_dustscorebass             = -1.0;
 	m_dustscoretreble           = -1.0;
 	m_averageHoleWidth          = -1.0;
+	m_isMonochrome              = false; 
 }
 
 
@@ -119,6 +120,16 @@ string RollImage::my_to_string(int value) {
 
 //////////////////////////////
 //
+// RollImage::setMonochrome 
+//
+void RollImage::setMonochrome(bool value) {
+	m_isMonochrome = value;
+}
+
+
+
+//////////////////////////////
+//
 // RollImage::loadGreenChannel -- Load the green channel of the input image
 //   and trim at the brightness threshold for the paper/hole boundary.
 //
@@ -127,7 +138,11 @@ void RollImage::loadGreenChannel(int threshold) {
 	setThreshold(threshold);
 	ulongint rows = getRows();
 	ulongint cols = getCols();
-	this->getImageGreenChannel(monochrome);
+	if (!m_isMonochrome) {
+		this->getImageGreenChannel(monochrome);
+        } else {
+		this->getImageChannel(monochrome);
+	}
 	pixelType.resize(rows);
 	for (ulongint r=0; r<rows; r++) {
 		pixelType[r].resize(getCols());

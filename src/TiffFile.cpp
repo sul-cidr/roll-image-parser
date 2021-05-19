@@ -189,6 +189,29 @@ void TiffFile::getImageGreenChannel(vector<vector<ucharint> >& image) {
 
 //////////////////////////////
 //
+// TiffFile::getImageChannel --
+//
+
+void TiffFile::getImageChannel(vector<vector<ucharint> >& image) {
+	//PMB -- works if monochrome because it's always 0
+	this->goToPixelIndex((int)0);
+	ulongint rows = this->getRows();
+	ulongint cols = this->getCols();
+	ucharint pixel;
+	image.resize(rows);
+	for (ulongint r=0; r<rows; r++) {
+		image.at(r).resize(cols);
+		for (ulongint c=0; c<cols; c++) {
+			pixel = this->read1UByte();
+			image.at(r).at(c) = pixel;
+		}
+	}
+}
+
+
+
+//////////////////////////////
+//
 // TiffFile::writeSamplesPerPixel -- 1 = monochrome, 3 = color.
 //
 

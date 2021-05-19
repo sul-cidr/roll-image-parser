@@ -43,6 +43,7 @@ int main(int argc, char** argv) {
 	options.define("5|65|65-note|65-hole=b", "Assume 65-note roll");
 	options.define("8|88|88-note|88-hole=b", "Assume 88-note roll");
 	options.define("t|threshold=i:249", "Brightness threshold for hole/paper separation");
+	options.define("m|monochrome=b", "Input image is a monochrome (single-channel) TIFF");
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 1) {
@@ -78,6 +79,7 @@ int main(int argc, char** argv) {
 
 	roll.setDebugOn();
 	roll.setWarningOn();
+	roll.setMonochrome(options.getBoolean("monochrome"));
 	roll.loadGreenChannel(threshold);
 	roll.analyze();
 	roll.printRollImageProperties();

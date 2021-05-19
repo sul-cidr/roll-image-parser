@@ -37,6 +37,7 @@ class TiffFile : public std::fstream, public TiffHeader {
 		std::string readString                  (ulongint count);
 		ucharint    read1UByte                  (void);
 		void        getImageGreenChannel        (std::vector<std::vector<ucharint> >& image);
+		void        getImageChannel             (std::vector<std::vector<ucharint> >& image);
 		bool        goToPixelIndex              (ulonglongint pindex);
 		bool        goToRowColumnIndex          (ulongint rowindex, ulongint colindex);
 		std::string getFilename                 (void);

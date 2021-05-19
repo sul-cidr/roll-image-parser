@@ -87,7 +87,8 @@ class RollImage : public TiffFile, public RollOptions {
 		                 RollImage                    (void);
 		                ~RollImage                    ();
 
-		void	          loadGreenChannel              (int threshold);
+		void	        loadGreenChannel              (int threshold);
+		void	        setMonochrome                 (bool value);
 		void            analyze                       (void);
 		void            analyzeHoles                  (void);
 		void            mergePixelOverlay             (std::fstream& output);
@@ -339,6 +340,7 @@ class RollImage : public TiffFile, public RollOptions {
 		double     m_dustscorebass;
 		double     m_dustscoretreble;
 		double     m_averageHoleWidth;
+		bool       m_isMonochrome;
 
 #ifndef DONOTUSEFFT
 		std::chrono::system_clock::time_point start_time;
