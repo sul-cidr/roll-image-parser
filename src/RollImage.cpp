@@ -506,6 +506,7 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 			continue;
 		}
 		midiKey[i] = trackerArray[i][0]->midikey;
+		firstHole[i] = trackerArray[i][0]->origin.first;
 
 		if (firstHole[i] > maxorigin) {
 			maxorigin = firstHole[i];
@@ -4065,7 +4066,7 @@ void RollImage::generateNoteMidiFileHex(ostream& output) {
 
 //////////////////////////////
 //
-// RollImage::generateHoldMidiFileHex -- Generate MIDI file where holes are not grouped into notes.
+// RollImage::generateHoleMidiFileHex -- Generate MIDI file where holes are not grouped into notes.
 //   I.e., no brige merging.
 //
 
@@ -4881,8 +4882,6 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@ \t\t\t   HPIXCOR_TRAIL:\tHorizontal pixel correction of the hole's trailing edge.\n";
 	out << "@@\n";
 	out << "\n";
-
-	assignMidiKeyNumbersToHoles();
 
 	out << "@@BEGIN: HOLES\n\n";
 	for (ulongint i=0; i<holes.size(); i++) {
