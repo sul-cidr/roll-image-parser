@@ -5126,7 +5126,15 @@ std::string RollImage::getDruid(std::string input) {
 	if (input.empty()) {
 		input = getFilename();
 	}
-	auto loc = input.find('_');
+	auto loc = input.find_last_of('/');
+	if (loc != string::npos) {
+		input = input.substr(loc+1, input.size());
+	}
+	loc = input.find_last_of("\\/");
+	if (loc != string::npos) {
+		input = input.substr(loc+1, input.size());
+	}
+	loc = input.find('_');
 	if (loc != string::npos) {
 		input = input.substr(0, loc);
 	}
