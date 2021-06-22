@@ -4365,7 +4365,10 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 		midifile.addController(m_treble_track,     tick, m_treble_ch,    10, 96); // treble notes pan rightish
 	}
 
-	ulongint mintime = holes[0]->origin.first;
+	// PMB Note that this can be different from hole MIDI. Assigning tick 0 to (likely spurious)
+	// non-music holes can lead to a timing gap at the start of the MIDI file, so the first tick
+	// is moved up to the first music hole.
+	ulongint mintime = firstMusicRow;
 	ulongint maxtime = 0;
 
 	int track;
@@ -4409,8 +4412,22 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 			velocity = velocitynormal;
 		}
 
-		midifile.addNoteOn(track, hi->origin.first - mintime, channel, hi->midikey, velocity);
-		midifile.addNoteOff(track, hi->offtime - mintime, channel, hi->midikey);
+		// PMB Set tick of (likely spurious) holes before the first music hole to 0; otherwise their
+		// tick values can be negative, which corrupts the output.
+		int ontick = hi->origin.first - mintime;
+		int offtick = hi->offtime - mintime;
+
+		if (ontick < 0) {
+			cerr << "ERROR ON TIME LESS THAN ZERO: " << ontick << " FOR KEY " << hi->midikey << endl;
+			ontick = 0;
+		}
+		if (offtick < 0) {
+			cerr << "ERROR OFF TIME LESS THAN ZERO: " << offtick << " FOR KEY " << hi->midikey << endl;
+			offtick = 0;
+		}
+
+		midifile.addNoteOn(track, ontick, channel, hi->midikey, velocity);
+		midifile.addNoteOff(track, offtick, channel, hi->midikey);
 
 		if (hi->offtime <= 0) {
 			cerr << "ERROR OFFTIME IS ZERO: " << hi->offtime << endl;
