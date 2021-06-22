@@ -4412,7 +4412,7 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 			velocity = velocitynormal;
 		}
 
-		// PMB Set tick of (likly spurious) holes before first music hole to 0; otherwise their
+		// PMB Set tick of (likely spurious) holes before the first music hole to 0; otherwise their
 		// tick values can be negative, which corrupts the output.
 		int ontick = hi->origin.first - mintime;
 		int offtick = hi->offtime - mintime;
