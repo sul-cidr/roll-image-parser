@@ -472,8 +472,6 @@ void RollImage::calculateHoleDescriptors(void) {
 //
 
 void RollImage::assignMidiKeyNumbersToHoles(void) {
-	// Initialize tracker hole -> midi number mapping
-
 	for (int i=0; i<(int)midiToTrackMapping.size(); i++) {
 		int track = midiToTrackMapping[i];
 		if (track <= 0) {
@@ -780,7 +778,8 @@ void RollImage::analyzeMidiKeyMapping(void) {
 		}
 	}
 
-	//PMB temporary fix for Welte red rolls
+	// This is to keep the MIDI numbers assigned to holes from being misaligned
+	// by 1, but a refactor is needed to prevent cases like this from happening
 	if ((m_rollType == "welte-red") && (position.size() <= 108)) {
 		leftmostIndex += 1;
 		std::cerr << "shifting leftmostIndex for red Welte roll to " << leftmostIndex << std::endl;
@@ -5126,11 +5125,7 @@ std::string RollImage::getDruid(std::string input) {
 	if (input.empty()) {
 		input = getFilename();
 	}
-	auto loc = input.find_last_of('/');
-	if (loc != string::npos) {
-		input = input.substr(loc+1, input.size());
-	}
-	loc = input.find_last_of("\\/");
+	auto loc = input.find_last_of("\\/");
 	if (loc != string::npos) {
 		input = input.substr(loc+1, input.size());
 	}
