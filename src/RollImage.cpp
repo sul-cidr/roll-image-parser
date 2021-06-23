@@ -459,7 +459,7 @@ void RollImage::calculateHoleDescriptors(void) {
 			continue;
 		}
 		holes[i]->circularity = 4 * M_PI * holes[i]->area /
-			holes[i]->perimeter / holes[i]->perimeter;
+		holes[i]->perimeter / holes[i]->perimeter;
 		holes[i]->majoraxis = calculateMajorAxis(*holes[i]);
 	}
 }
@@ -761,10 +761,9 @@ void RollImage::analyzeMidiKeyMapping(void) {
 
 	double lefttarget = leftMarginIndex[r];
 	// Convert to corrected horizontal position:
-   lefttarget += driftCorrection[r];
+	lefttarget += driftCorrection[r];
 	// Move to the treble by the expected bass margin:
 	lefttarget += getMinTrackerEdge() * holeSeparation;
-
 
 	// Now find the position that best fits that predicted position of 
 	// the first bass hole position:
@@ -779,15 +778,27 @@ void RollImage::analyzeMidiKeyMapping(void) {
 		}
 	}
 
+	// This is to keep the MIDI numbers assigned to holes from being misaligned
+	// by 1, but a refactor is needed to prevent cases like this from happening
+	if ((m_rollType == "welte-red") && (position.size() <= 108)) {
+		leftmostIndex += 1;
+		std::cerr << "shifting leftmostIndex for red Welte roll to " << leftmostIndex << std::endl;
+	}
+
 	// Initialize the MIDI-to-track mapping:
 	midiToTrackMapping.resize(128);
 	std::fill(midiToTrackMapping.begin(), midiToTrackMapping.end(), 0);
+
+	// Initialize the track-to-MIDI mapping:
+	trackToMidiMapping.resize(128);
+	std::fill(trackToMidiMapping.begin(), trackToMidiMapping.end(), 0);
 
 	// Assign MIDI key positions to the mapping, starting with
 	// the first position.
 	int count = m_treble_midi - m_bass_midi + 1;
 	for (int i=0; i<count; i++) {
 		midiToTrackMapping.at(i+m_bass_midi) = i+leftmostIndex;
+		trackToMidiMapping.at(i+leftmostIndex) = i+m_bass_midi;
 	}
 
 	// int trackerholes = getMeasuredTrackerHoleCount();
@@ -1066,7 +1077,7 @@ void RollImage::analyzeRawRowPositions(void) {
 	rrp.resize(0);
 
 	std::vector<int>& cch = correctedCentroidHistogram;
-	for (uint i=0; i<cch.size(); i++) {
+	for (int i=0; i<cch.size(); i++) {
 		if (cch[i] == 0) {
 			continue;
 		}
@@ -4054,7 +4065,7 @@ void RollImage::generateNoteMidiFileHex(ostream& output) {
 
 //////////////////////////////
 //
-// RollImage::generateHoldMidiFileHex -- Generate MIDI file where holes are not grouped into notes.
+// RollImage::generateHoleMidiFileHex -- Generate MIDI file where holes are not grouped into notes.
 //   I.e., no brige merging.
 //
 
@@ -4874,6 +4885,7 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@BEGIN: HOLES\n\n";
 	for (ulongint i=0; i<holes.size(); i++) {
 		if (holes.at(i)->isMusicHole()) {
+			holes.at(i)->midikey = trackToMidiMapping[holes.at(i)->track];
 			holes.at(i)->printAton(out);
 			out << std::endl;
 		}
@@ -5113,7 +5125,11 @@ std::string RollImage::getDruid(std::string input) {
 	if (input.empty()) {
 		input = getFilename();
 	}
-	auto loc = input.find('_');
+	auto loc = input.find_last_of("\\/");
+	if (loc != string::npos) {
+		input = input.substr(loc+1, input.size());
+	}
+	loc = input.find('_');
 	if (loc != string::npos) {
 		input = input.substr(0, loc);
 	}

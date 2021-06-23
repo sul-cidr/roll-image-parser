@@ -207,6 +207,8 @@ class RollImage : public TiffFile, public RollOptions {
 		// (in image, not roll).  Zero means no mapping (not allowed to reference
 		// position 0 in trackerArray).
 		std::vector<int> midiToTrackMapping;
+		// trackToMidiMapping -- the inverse of midiToTrackMapping
+		std::vector<int> trackToMidiMapping;
 
 		// trackMeaning -- the function of the hole, mostly for expression
 		// and rewind hole.
