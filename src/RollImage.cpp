@@ -3258,6 +3258,7 @@ void RollImage::recalculateFirstMusicHole(void) {
 	ulongint minrow = getRows() - 1;
 	std::vector<std::vector<HoleInfo*> >& ta = trackerArray;
 	ulongint row;
+	ulongint nextMusicRow = minrow;
 	for (ulongint i=0; i<ta.size(); i++) {
 		for (ulongint j=0; j<ta[i].size(); j++) {
 			if (!ta[i][j]->isMusicHole()) {
@@ -3266,9 +3267,21 @@ void RollImage::recalculateFirstMusicHole(void) {
 			row = ta[i][j]->origin.first;
 			if (row < minrow) {
 				minrow = row;
+			} else if (row < nextMusicRow) {
+				nextMusicRow = row;
 			}
 		}
 	}
+
+	// PMB XXX Still determining best threshold. Should it be some
+	// proportion of the row? A certain number of standard deviations
+	// (in inter-note-distances, measured from their starting points)
+	// for this roll or all rolls?
+    if ((nextMusicRow > minrow) && ((nextMusicRow - minrow) > 10000)) {
+		cerr << "FIRST MUSIC HOLE MUCH EARLIER THAN NEXT: " << minrow << " -> " << nextMusicRow << ", SKIPPING" << endl;
+		minrow = nextMusicRow;
+	}
+
 	if (minrow > firstMusicRow) {
 		firstMusicRow = minrow;
 		markPosteriorLeader();
