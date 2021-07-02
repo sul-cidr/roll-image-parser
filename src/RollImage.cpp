@@ -4435,12 +4435,6 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 		midifile.addNoteOn(track, ontick, channel, hi->midikey, velocity);
 		midifile.addNoteOff(track, offtick, channel, hi->midikey);
 
-		if (hi->offtime <= 0) {
-			cerr << "ERROR OFFTIME IS ZERO: " << hi->offtime << endl;
-		}
-		if (hi->offtime < hi->origin.first) {
-			cerr << "ERROR OFF TIME IS BEFORE ON TIME " << hi->origin.first << " VERSUS " << hi->offtime << " FOR KEY " << hi->midikey << endl;
-		}
 		if (hi->offtime > maxtime) {
 			maxtime = hi->offtime;
 		}
