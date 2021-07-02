@@ -15,7 +15,7 @@
 //                    bin/markholes input.tiff copy.tiff > analysis.txt
 // Options:
 //     -r         Assume a Red Welte-Mignon piano roll (T-100).
-//     -g         Assume a Green Welte-Mignon piano roll (T-98), but option not yet active.
+//     -g         Assume a Green Welte-Mignon piano roll (T-98).
 //     -l         Assume a Welte-Mignon (Deluxe) Licensee piano roll.
 //     -a         Assume an Ampico [A] (older) piano roll, but option not yet active.
 //     -b         Assume an Ampico B (newer) piano roll, but option not yet active.
@@ -38,7 +38,7 @@ using namespace rip;
 int main(int argc, char** argv) {
 	Options options;
 	options.define("r|red|red-welte|welte-red=b", "Assume Red-Welte (T-100) piano roll");
-	options.define("g|green|green-welte|welte-green=b", "Assume Green-Welte (T-98) piano roll (option not active yet)");
+	options.define("g|green|green-welte|welte-green=b", "Assume Green-Welte (T-98) piano roll");
 	options.define("l|licensee|licensee-welte|welte-licensee=b", "Assume Licensee piano roll");
 	options.define("a|ampico=b", "Assume Ampico [A] piano roll (option not active yet)");
 	options.define("b|ampico-b=b", "Assume Ampico B piano roll (option not active yet)");

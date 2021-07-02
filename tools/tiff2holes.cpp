@@ -12,7 +12,7 @@
 //                markup of the copy of the input image.
 // Options:
 //     -r         Assume a Red Welte-Mignon piano roll (T-100).
-//     -g         Assume a Green Welte-Mignon piano roll (T-98), but option not yet active.
+//     -g         Assume a Green Welte-Mignon piano roll (T-98).
 //     -l         Assume a Welte-Mignon (De Luxe) Licensee piano roll
 //     -a         Assume an Ampico [A] (older) piano roll, but option not yet active.
 //     -b         Assume an Ampico B (newer) piano roll, but option not yet active.
@@ -35,7 +35,7 @@ using namespace rip;
 int main(int argc, char** argv) {
 	Options options;
 	options.define("r|red|red-welte|welte-red=b", "Assume Red-Welte (T-100) piano roll");
-	options.define("g|green|green-welte|welte-green=b", "Assume Green-Welte (T-98) piano roll (option not active yet)");
+	options.define("g|green|green-welte|welte-green=b", "Assume Green-Welte (T-98) piano roll");
 	options.define("l|licensee|licensee-welte|welte-licensee=b", "Assume Licensee piano roll");
 	options.define("a|ampico=b", "Assume Ampico [A] piano roll (option not active yet)");
 	options.define("b|ampico-b=b", "Assume Ampico B piano roll (option not active yet)");
@@ -47,7 +47,7 @@ int main(int argc, char** argv) {
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 1) {
-		cerr << "Usage: tiff2holes [-rl58tm] file.tiff > analysis.txt" << endl;
+		cerr << "Usage: tiff2holes [-rgl58tm] file.tiff > analysis.txt" << endl;
 		cerr << "file.tiff must be a 24-bit color image, uncompressed" << endl;
 		cerr << "unless -m is supplied; then file.tiff must be a monochrome" << endl;
 		cerr << "(8-bit, single-channel) image, uncompressed" << endl;
