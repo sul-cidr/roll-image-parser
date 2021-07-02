@@ -4127,8 +4127,6 @@ void RollImage::generateHoleMidifile(MidiFile& midifile) {
 	insertRollImageProperties(midifile);
 	midifile.addText(0, 0, "@MIDIFILE_TYPE:\t\thole");
 
-	assignMidiKeyNumbersToHoles();
-
 	setMidiFileTempo(midifile);
 
 	// Tracks are organized by real notes first, then expression tracks.
@@ -4280,8 +4278,6 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 
 	insertRollImageProperties(midifile);
 	midifile.addText(0, 0, "@MIDIFILE_TYPE:\t\tnote");
-
-	assignMidiKeyNumbersToHoles();
 
 	setMidiFileTempo(midifile);
 
@@ -4876,6 +4872,8 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@ \t\t\t   HPIXCOR_TRAIL:\tHorizontal pixel correction of the hole's trailing edge.\n";
 	out << "@@\n";
 	out << "\n";
+
+	assignMidiKeyNumbersToHoles();
 
 	out << "@@BEGIN: HOLES\n\n";
 	for (ulongint i=0; i<holes.size(); i++) {
