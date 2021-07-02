@@ -4422,18 +4422,13 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 			velocity = velocitynormal;
 		}
 
-		// PMB Set tick of (likely spurious) holes before the first music hole to 0; otherwise their
-		// tick values can be negative, which corrupts the output.
+		// Skip likely spurious holes appearing before the first music hole.
 		int ontick = hi->origin.first - mintime;
 		int offtick = hi->offtime - mintime;
 
-		if (ontick < 0) {
-			cerr << "ERROR ON TIME LESS THAN ZERO: " << ontick << " FOR KEY " << hi->midikey << endl;
-			ontick = 0;
-		}
-		if (offtick < 0) {
-			cerr << "ERROR OFF TIME LESS THAN ZERO: " << offtick << " FOR KEY " << hi->midikey << endl;
-			offtick = 0;
+		if ((ontick < 0) || (offtick < 0)) {
+			cerr << "NOTE ON TICK OR OFF TICK LESS THAN ZERO: " << ontick << " -> " << offtick << " FOR KEY " << hi->midikey << ", SKIPPING" << endl;
+			continue;
 		}
 
 		midifile.addNoteOn(track, ontick, channel, hi->midikey, velocity);
