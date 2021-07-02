@@ -51,6 +51,7 @@ class RollOptions {
 		std::string getRollType               (void);
 		void     setRollTypeRedWelte          (void);
 		void     setRollTypeGreenWelte        (void);
+		void     setRollTypeLicenseeWelte     (void);
 		void     setRollType65Note            (void);
 		void     setRollType88Note            (void);
 

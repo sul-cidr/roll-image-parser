@@ -16,7 +16,7 @@
 // Options:
 //     -r         Assume a Red Welte-Mignon piano roll (T-100).
 //     -g         Assume a Green Welte-Mignon piano roll (T-98), but option not yet active.
-//     -l         Assume a Welte-Mignon (Deluxe) Licensee piano roll, but option not yet active.
+//     -l         Assume a Welte-Mignon (Deluxe) Licensee piano roll.
 //     -a         Assume an Ampico [A] (older) piano roll, but option not yet active.
 //     -b         Assume an Ampico B (newer) piano roll, but option not yet active.
 //     -d         Assume a Duo-Art piano roll, but option not yet active.
@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
 	Options options;
 	options.define("r|red|red-welte|welte-red=b", "Assume Red-Welte (T-100) piano roll");
 	options.define("g|green|green-welte|welte-green=b", "Assume Green-Welte (T-98) piano roll (option not active yet)");
-	options.define("l|licensee|licensee-welte|welte-licensee=b", "Assume Licensee piano roll (option not active yet)");
+	options.define("l|licensee|licensee-welte|welte-licensee=b", "Assume Licensee piano roll");
 	options.define("a|ampico=b", "Assume Ampico [A] piano roll (option not active yet)");
 	options.define("b|ampico-b=b", "Assume Ampico B piano roll (option not active yet)");
 	options.define("d|duo-art=b", "Assume Aeolean Duo-Art piano roll (option not active yet)");
@@ -65,6 +65,8 @@ int main(int argc, char** argv) {
 		roll.setRollTypeRedWelte();
 	} else if (options.getBoolean("green-welte")) {
 		roll.setRollTypeGreenWelte();
+	} else if (options.getBoolean("licensee-welte")) {
+		roll.setRollTypeLicenseeWelte();
 	} else if (options.getBoolean("65-note")) {
 		roll.setRollType65Note();
 	} else if (options.getBoolean("88-note")) {
@@ -73,6 +75,7 @@ int main(int argc, char** argv) {
 		cerr << "A Roll type is required:" << endl;
 		cerr << "   -r   == for red Welte rolls"   << endl;
 		cerr << "   -g   == for green Welte rolls" << endl;
+		cerr << "   -l   == for Licensee Welte rolls" << endl;
 		cerr << "   --65 == for 65-note rolls"     << endl;
 		cerr << "   --88 == for 88-note rolls"     << endl;
 		exit(1);
