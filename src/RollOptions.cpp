@@ -343,7 +343,7 @@ void RollOptions::setRollTypeRedWelte(void) {
 
 //////////////////////////////
 //
-// RollOptions::setRollTypeGreenWelte -- Apply settings suitable for Red Welte (T-98) piano rolls.
+// RollOptions::setRollTypeGreenWelte -- Apply settings suitable for Green Welte (T-98) piano rolls.
 //
 // Peter Phillips dissertation: https://ses.library.usyd.edu.au/bitstream/2123/16939/1/Piano%20Rolls.pdf
 //
@@ -355,14 +355,14 @@ void RollOptions::setRollTypeRedWelte(void) {
 //       3:  Sustain pedal                   MIDI Key 18
 //       4:  Bass Crescendo                  MIDI Key 19
 //       5:  Bass Sforzando forte            MIDI Key 20
-//   Then 88 notes from C0 to C8 (MIDI notes 21 to 108) (but actually only 80 used)
+//   Then 88 notes from A0 to C8 (MIDI notes 21 to 108)
 //       6: A0                               MIDI Key 21
 //       ...
 //       51:  F#4                            MIDI Key 66
 //    Treble register:
 //       52:  G4                             MIDI Key 67
 //       ...
-//       93:  G7                             MIDI Key 108
+//       93:  C8                             MIDI Key 108
 //   5 expression holes on the treble side:
 //       94:  -5:  Treble Sforzando forte    MIDI Key 109
 //       95:  -4:  Treble Crescendo          MIDI Key 110
@@ -372,9 +372,6 @@ void RollOptions::setRollTypeRedWelte(void) {
 //
 
 void RollOptions::setRollTypeGreenWelte(void) {
-	cerr << "GREEN ROLL NOT IMPLEMENT YET" << endl;
-	exit(1);
-
 	m_rollType = "welte-green";
 	m_minTrackerSpacingToPaperEdge = 1.6; // check
 	m_rewindHole = 1;  // 1st hole from left (bass), but only if "long"
@@ -389,7 +386,7 @@ void RollOptions::setRollTypeGreenWelte(void) {
 	m_bassNotesTrackStartNumberLeft = 6;
 	m_bassNotesTrackStartMidi = 21;
 
-	m_trebleNotesTrackStartNumberLeft = 54;
+	m_trebleNotesTrackStartNumberLeft = 52;
 	m_trebleNotesTrackStartMidi = 67;
 
 	m_trebleExpressionTrackStartNumberLeft = 94;
