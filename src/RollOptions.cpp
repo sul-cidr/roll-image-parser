@@ -263,7 +263,7 @@ void RollOptions::setHoleShiftCutoff(double value) {
 //   "" = unknown/unspecified
 //   "welte-red"      = Welte Mignon T-100 red roll
 //   "welte-green"    = Welte Mignon T-98 green roll
-//   "welte-licensee" = Welte Mignon (Deluxe) Licensee
+//   "welte-licensee" = Welte Mignon (De Luxe) Licensee
 //   "ampico"         = AMPICO roll (variation not specified)
 //   "ampico-a"       = AMPICO roll, earlier model
 //   "ampico-b"       = AMPICO roll, later model
@@ -394,6 +394,68 @@ void RollOptions::setRollTypeGreenWelte(void) {
 
 	m_trebleExpressionTrackStartNumberLeft = 94;
 	m_trebleExpressionTrackStartMidi = 109;
+
+	hasExpressionMidiFileSetup();
+}
+
+
+
+//////////////////////////////
+//
+// RollOptions::setRollTypeLicenseeWelte -- Apply settings suitable for Welte Licensee (US De Luxe) piano rolls.
+//
+// Welte Licensee tracker holes:
+//
+//   8 expression holes on bass side:
+//       1:  Bass Mezzoforte off             MIDI Key 16
+//       2:  Bass Mezzoforte on              MIDI Key 17
+//       3:  Bass Crescendo off              MIDI Key 18
+//       4:  Bass Crescendo on               MIDI Key 19
+//       5:  Bass Sforzando off              MIDI Key 20
+//       6:  Bass Sforzando on               MIDI Key 21
+//       7:  Soft pedal on                   MIDI Key 22
+//       8:  Soft pedal off                  MIDI Key 23
+//   Then 80 notes from C1 to G7 (MIDI notes 24 to 103)
+//       9:  C1                              MIDI Key 24
+//       ...
+//       51:  F#4                            MIDI Key 66
+//    Treble register:
+//       52:  G4                             MIDI Key 67
+//       ...
+//       88:  G7                             MIDI Key 103
+//   10 expression holes on the treble side:
+//       89: -10:  Rewind                    MIDI Key 104
+//       90:  -9:  Blank                    [MIDI Key 105]
+//       91:  -8:  Sustain pedal on          MIDI Key 106
+//       92:  -7:  Sustain pedal off         MIDI Key 107
+//       93:  -6:  Treble Sforzando on       MIDI Key 108
+//       94:  -5:  Treble Sforzando off      MIDI Key 109
+//       95:  -4:  Treble Crescendo on       MIDI Key 110
+//       96:  -3:  Treble Crescendo off      MIDI Key 111
+//       97:  -2:  Treble Mezzoforte on      MIDI Key 112
+//       98:  -1:  Treble Mezzoforte off     MIDI Key 113
+//		 
+
+void RollOptions::setRollTypeLicenseeWelte(void) {
+	m_rollType = "welte-licensee";
+	m_minTrackerSpacingToPaperEdge = 1.6; // check
+	m_rewindHole = 89;
+	m_rewindHoleMidi = 104;
+	m_trackerHoles = 98;
+
+	m_bass_midi = 16;   // first MIDI Note on bass side of paper
+	m_treble_midi = 113; // first MIDI Note on treble side of paper
+
+	m_bassExpressionTrackStartNumberLeft = 1;
+	m_bassExpressionTrackStartMidi = 16;
+	m_bassNotesTrackStartNumberLeft = 9;
+	m_bassNotesTrackStartMidi = 24;
+
+	m_trebleNotesTrackStartNumberLeft = 52;
+	m_trebleNotesTrackStartMidi = 67;
+
+	m_trebleExpressionTrackStartNumberLeft = 89;
+	m_trebleExpressionTrackStartMidi = 104;
 
 	hasExpressionMidiFileSetup();
 }
