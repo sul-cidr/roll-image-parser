@@ -564,7 +564,7 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		return;
 	}
 
-	int shifting = rewindholemidi - midiKey[bestFitIndex];
+	int shifting = midiKey[bestFitIndex] - rewindholemidi;
 	cerr << "SHIFTING HOLE ASSIGNMENTS BY " << shifting << " FOR REWIND HOLE ALIGNMENT" << endl;
 
 	for (int i=0; i<(int)trackerArray.size(); i++) {
