@@ -794,12 +794,92 @@ void RollImage::analyzeMidiKeyMapping(void) {
 		}
 	}
 
-	// This is to keep the MIDI numbers assigned to holes from being misaligned
-	// by 1, but a refactor is needed to prevent cases like this from happening
-	if ((m_rollType == "welte-red") && (position.size() <= 108)) {
-		leftmostIndex += 1;
-		std::cerr << "shifting leftmostIndex for red Welte roll to " << leftmostIndex << std::endl;
+	std::cerr << "Best fit for leftmost index position based on roll dimensions: " << leftmostIndex << std::endl;
+
+	// Note which potential tracker hole columns contain the leftmost and
+	// rightmost (bassmost and treblemost) holes on the roll
+	int firstColumnIndex = 0;
+	int lastColumnIndex = 0;
+
+	for (ulongint i=0; i<trackerArray.size(); i++) {
+		if (trackerArray[i].size() > 0) {
+			firstColumnIndex = i;
+			break;
+		}
 	}
+	for (ulongint i=trackerArray.size()-1; i>=0; i--) {
+		if (trackerArray[i].size() > 0) {
+			lastColumnIndex = i;
+			break;
+		}
+	}
+
+	// Not all of the tracker hole columns will contain peforations; 88-note
+	// rolls for example may not use several of their leftmost or rightmost
+	// columns
+	int detectedColumns = lastColumnIndex - firstColumnIndex + 1;
+
+	std::cerr << "Leftmost position index with holes: " << firstColumnIndex << std::endl;
+	std::cerr << "Rightmost position index with holes: " << lastColumnIndex << std::endl;
+
+    if (detectedColumns != m_trackerHoles) {
+		std::cerr << "WARNING: expected " << m_trackerHoles << " tracker holes, found " << detectedColumns << std::endl;
+	}
+
+	// Scan all plausible windows of m_trackerHoles columns to see if there is
+	// a better "fit", i.e., a leftmostIndex position that covers more holes
+	// than the starting index identified by the positional logic above.
+	//
+	// Range of leftmostIndex positions to try:
+	// Start: Likely first column based on margins, or leftmost column with
+	//        holes, whichever comes first
+	// End: The last column with holes - the expected number of tracker holes,
+	//      or the leftmost column with holes, whichever comes last
+	int bestLeftIndex = leftmostIndex;
+	int mostHolesCovered = 0;
+	int holesInSpan = 0;
+	for (int j=0; j<m_trackerHoles; j++) {
+	    holesInSpan += trackerArray[leftmostIndex+j].size();
+	}
+	mostHolesCovered = holesInSpan;
+
+	std::cerr << "Holes covered by tracker span starting at " << leftmostIndex << ": " << holesInSpan << std::endl;
+	int i = std::min(firstColumnIndex, leftmostIndex);
+
+	int lastLeftIndex = std::max(lastColumnIndex - m_trackerHoles + 1, firstColumnIndex);
+
+	std::cerr << "Starting index range to scan is " << i << " to " << lastLeftIndex << std::endl;
+
+	while (i <= lastLeftIndex) {
+
+		if (i == leftmostIndex) {
+			i++;
+			continue;
+		}
+
+		holesInSpan = 0;
+		for (int j=0; j<m_trackerHoles; j++) {
+			holesInSpan += trackerArray[i+j].size();
+		}
+
+		std::cerr << "Holes covered by tracker span starting at " << i << ": " << holesInSpan << std::endl;
+
+		// Welte rolls tend to misalign by 1 to the left, so if it's a tie
+		// between the first candidate and the next, choose the starting
+		// position to the right
+		if ((holesInSpan > mostHolesCovered) ||
+		    ((holesInSpan == mostHolesCovered) && 
+			 ((m_rollType == "welte-red") || (m_rollType == "welte-green") || (m_rollType == "welte-licensee")) &&
+			 (i == (leftmostIndex + 1)))) {
+			mostHolesCovered = holesInSpan;
+			bestLeftIndex = i;
+		}
+
+		i++;
+	}
+
+	leftmostIndex = bestLeftIndex;
+	std::cerr << "After considering alternatives, leftmostIndex is now " << leftmostIndex << std::endl;	
 
 	// Initialize the MIDI-to-track mapping:
 	midiToTrackMapping.resize(128);
@@ -807,7 +887,7 @@ void RollImage::analyzeMidiKeyMapping(void) {
 
 	// Assign MIDI key positions to the mapping, starting with
 	// the first position.
-	int count = m_treble_midi - m_bass_midi + 1;
+	int count = m_trackerHoles;
 	for (int i=0; i<count; i++) {
 		midiToTrackMapping.at(i+m_bass_midi) = i+leftmostIndex;
 	}
