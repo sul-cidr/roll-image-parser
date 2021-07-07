@@ -48,6 +48,7 @@ void RollOptions::reset(void) {
 	m_minTrackerSpacingToPaperEdge = 0.50;
 	m_maxHoleWidth                 = 1.50; // wide for rewind hole of duoart salesman
 	m_aspectRatioThreshold         = 1.25;
+	m_pixelsPerInch                = 300;
 	m_majorAxisThreshold           = 13.0;
 	m_circularityThreshold         =  0.4;
 	m_maxHoleCount                 = 100000;
@@ -55,6 +56,17 @@ void RollOptions::reset(void) {
 	m_attackLineSpacing            = 10;
 	m_holeShiftCutoff              = 3.0;
 };
+
+
+
+//////////////////////////////
+//
+// RollOptions::getPixelsPerInch -- 
+//
+
+double RollOptions::getPixelsPerInch(void) {
+	return m_pixelsPerInch;
+}
 
 
 
@@ -595,6 +607,28 @@ void RollOptions::setThreshold(int value) {
 
 int RollOptions::getThreshold(void) {
 	return (ucharint)m_threshold;
+}
+
+
+
+//////////////////////////////
+//
+// RollOptions::setRollAcceleration -- 
+//
+
+void RollOptions::setRollAcceleration(double value) {
+	m_rollAcceleration = value;
+}
+
+
+
+//////////////////////////////
+//
+// RollOptions::getRollAcceleration -- 
+//
+
+double RollOptions::getRollAcceleration(void) {
+	return m_rollAcceleration;
 }
 
 
