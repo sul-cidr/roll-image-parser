@@ -4224,18 +4224,6 @@ void RollImage::generateHoleMidifile(MidiFile& midifile) {
 
 	// should also add bad holes into track 5 here.
 
-	// add tempo correction
-	double timevalue = 1.0;
-	double tempo;
-	ulongint curtime = 0;
-	double increment = 0.0;
-	while (curtime < maxtime - mintime) {
-		tempo = 60 / timevalue + increment;
-      midifile.addTempo(0, curtime, tempo);
-		curtime += 3600;
-		increment += m_tempo_additive_acceleration_per_foot;
-	}
-
 	midifile.sortTracks();
 }
 #endif
@@ -4452,15 +4440,17 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 	}
 
 	// Add acceleration emulation:
-	double timevalue = 1.0;
-	double tempo;
+	double timeQuantumInTicks = 12.0 * getPixelsPerInch();
+	double accelFactor = 1.0;
+	double curtempo = 60.0;
 	ulongint curtime = 0;
-	double increment = 0.0;
-	while (curtime < maxtime - mintime) {
-		tempo = 60 / timevalue + increment;
-      midifile.addTempo(0, curtime, tempo);
-		curtime += 3600;
-		increment += m_tempo_additive_acceleration_per_foot;
+	int totalTicks = getLastMusicHoleEnd() - getFirstMusicHoleStart();
+
+	while (curtime < totalTicks) {
+		midifile.addTempo(0, curtime, curtempo);
+		accelFactor += m_tempo_acceleration_per_foot;
+		curtime = curtime + (ulongint)std::round(timeQuantumInTicks * accelFactor);
+		curtempo = 60.0 * accelFactor;
 	}
 
 	midifile.sortTracks();
@@ -4571,7 +4561,7 @@ void RollImage::insertRollImageProperties(MidiFile& midifile) {
 	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@THRESHOLD:\t\t"         << getThreshold()                << "";
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@LENGTH_DPI:\t\t"        << 300.25                        << "ppi";
+	ss << "@LENGTH_DPI:\t\t"        << getPixelsPerInch()            << "ppi";
 	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@IMAGE_WIDTH:\t\t"       << getCols()                     << "px";
 	midifile.addText(0, 0, ss.str()); ss.str("");
@@ -4809,7 +4799,7 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@DRUID:\t\t\t"           << getDruid()                    << "\n";
 	out << "@ROLL_TYPE:\t\t"         << getRollType()                 << "\n";
 	out << "@THRESHOLD:\t\t"         << getThreshold()                << "\n";
-	out << "@LENGTH_DPI:\t\t"        << 300.25                        << "ppi\n";
+	out << "@LENGTH_DPI:\t\t"        << getPixelsPerInch()            << "ppi\n";
 	out << "@IMAGE_WIDTH:\t\t"       << getCols()                     << "px\n";
 	out << "@IMAGE_LENGTH:\t\t"      << getRows()                     << "px\n";
 	out << "@ROLL_WIDTH:\t\t"        << averageRollWidth              << "px\n";
