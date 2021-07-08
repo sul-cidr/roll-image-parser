@@ -4444,9 +4444,8 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 	double accelFactor = 1.0;
 	double curtempo = 60.0;
 	ulongint curtime = 0;
-	int totalTicks = getLastMusicHoleEnd() - getFirstMusicHoleStart();
 
-	while (curtime < totalTicks) {
+	while (curtime < maxtime - mintime) {
 		midifile.addTempo(0, curtime, curtempo);
 		accelFactor += m_tempo_acceleration_per_foot;
 		curtime = curtime + (ulongint)std::round(timeQuantumInTicks * accelFactor);
