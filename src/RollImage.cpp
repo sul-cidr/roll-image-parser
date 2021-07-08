@@ -789,16 +789,11 @@ void RollImage::analyzeMidiKeyMapping(void) {
 	midiToTrackMapping.resize(128);
 	std::fill(midiToTrackMapping.begin(), midiToTrackMapping.end(), 0);
 
-	// Initialize the track-to-MIDI mapping:
-	trackToMidiMapping.resize(128);
-	std::fill(trackToMidiMapping.begin(), trackToMidiMapping.end(), 0);
-
 	// Assign MIDI key positions to the mapping, starting with
 	// the first position.
 	int count = m_treble_midi - m_bass_midi + 1;
 	for (int i=0; i<count; i++) {
 		midiToTrackMapping.at(i+m_bass_midi) = i+leftmostIndex;
-		trackToMidiMapping.at(i+leftmostIndex) = i+m_bass_midi;
 	}
 
 	// int trackerholes = getMeasuredTrackerHoleCount();
@@ -4132,8 +4127,6 @@ void RollImage::generateHoleMidifile(MidiFile& midifile) {
 	insertRollImageProperties(midifile);
 	midifile.addText(0, 0, "@MIDIFILE_TYPE:\t\thole");
 
-	assignMidiKeyNumbersToHoles();
-
 	setMidiFileTempo(midifile);
 
 	// Tracks are organized by real notes first, then expression tracks.
@@ -4285,8 +4278,6 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 
 	insertRollImageProperties(midifile);
 	midifile.addText(0, 0, "@MIDIFILE_TYPE:\t\tnote");
-
-	assignMidiKeyNumbersToHoles();
 
 	setMidiFileTempo(midifile);
 
@@ -4882,10 +4873,11 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@\n";
 	out << "\n";
 
+	assignMidiKeyNumbersToHoles();
+
 	out << "@@BEGIN: HOLES\n\n";
 	for (ulongint i=0; i<holes.size(); i++) {
 		if (holes.at(i)->isMusicHole()) {
-			holes.at(i)->midikey = trackToMidiMapping[holes.at(i)->track];
 			holes.at(i)->printAton(out);
 			out << std::endl;
 		}
