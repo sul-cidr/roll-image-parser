@@ -4,3 +4,5 @@ bin
 *.tiff
 err
 external
+.idea/
+.zshrc
