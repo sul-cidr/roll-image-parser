@@ -110,7 +110,7 @@ class RollImage : public TiffFile, public RollOptions {
 		int             getSoftMarginLeftWidthMax     (void);
 		int             getSoftMarginRightWidthMax    (void);
 		double          getAverageRollWidth           (void);
-		double          getAverageMusicalHoleWidth    (void);
+		ulongint        getAverageMusicalHoleWidth    (void);
 		ulongint        getLeftMarginWidth            (ulongint rowindex);
 		ulongint        getRightMarginWidth           (ulongint rowindex);
 		double          getAverageSoftMarginTotal     (void);

@@ -398,8 +398,9 @@ void RollImage::groupHoles(void) {
 
 void RollImage::groupHoles(ulongint index) {
 	vector<HoleInfo*>& hi = trackerArray[index];
-	double scalefactor = getBridgeFactor();
-	double length = getAverageMusicalHoleWidth() * scalefactor;
+//	double scalefactor = getBridgeFactor();
+//	double length = getAverageMusicalHoleWidth() * scalefactor;
+  ulongint length = getAverageMusicalHoleWidth();
 	if (hi.empty()) {
 		return;
 	}
@@ -3608,19 +3609,19 @@ ulongint RollImage::getRightMarginWidth(ulongint rowindex) {
 // RollImage::getAverageMusicalHoleWidth --
 //
 
-double RollImage::getAverageMusicalHoleWidth(void) {
+ulongint RollImage::getAverageMusicalHoleWidth(void) {
 	if (m_averageHoleWidth != -1.0) {
 		return m_averageHoleWidth;
 	}
-	if (holes.size() == 0) {
+	if (holes.empty()) {
 		return 0.0;
 	}
-	double sum = 0.0;
-	for (ulongint i=0; i<holes.size(); i++) {
-		sum += holes[i]->width.second;
-	}
-	m_averageHoleWidth = sum / holes.size();
-	return m_averageHoleWidth;
+	vector<HoleInfo *> holes_copy = holes;
+	std::sort(holes_copy.begin(), holes_copy.end(), [](const HoleInfo *first, const HoleInfo *second) {
+    return first -> width.second < second -> width.second;
+	});
+	ulongint median = holes_copy[holes_copy.size() / 2] -> width.second;
+	return median;
 }
 
 
