@@ -63,7 +63,7 @@ void RollImage::clear(void) {
 	m_dustscore                 = -1.0;
 	m_dustscorebass             = -1.0;
 	m_dustscoretreble           = -1.0;
-	m_averageHoleWidth          = -1.0;
+	m_averageHoleWidth          = -1;
 	m_isMonochrome              = false; 
 }
 
@@ -398,14 +398,14 @@ void RollImage::groupHoles(void) {
 
 void RollImage::groupHoles(ulongint index) {
 	vector<HoleInfo*>& hi = trackerArray[index];
-//	double scalefactor = getBridgeFactor();
-//	double length = getAverageMusicalHoleWidth() * scalefactor;
-  ulongint length = getAverageMusicalHoleWidth();
+
+  ulongint length = getMedianMusicalHoleWidth();
+
 	if (hi.empty()) {
 		return;
 	}
 
-	HoleInfo* lastattack = NULL;
+	HoleInfo* lastattack = nullptr;
 	hi[0]->attack = true;
 	hi[0]->offtime = hi[0]->origin.first + hi[0]->width.first;
 	lastattack = hi[0];
@@ -3606,22 +3606,27 @@ ulongint RollImage::getRightMarginWidth(ulongint rowindex) {
 
 //////////////////////////////
 //
-// RollImage::getAverageMusicalHoleWidth --
+// RollImage::getMedianMusicalHoleWidth -- Gets median width of the holes
 //
 
-ulongint RollImage::getAverageMusicalHoleWidth(void) {
-	if (m_averageHoleWidth != -1.0) {
+ulongint RollImage::getMedianMusicalHoleWidth() const {
+	if (m_averageHoleWidth != -1) {
 		return m_averageHoleWidth;
 	}
+
 	if (holes.empty()) {
-		return 0.0;
+		return 0;
 	}
+
 	vector<HoleInfo *> holes_copy = holes;
+
 	std::sort(holes_copy.begin(), holes_copy.end(), [](const HoleInfo *first, const HoleInfo *second) {
     return first -> width.second < second -> width.second;
 	});
-	ulongint median = holes_copy[holes_copy.size() / 2] -> width.second;
-	return median;
+
+	return holes_copy.size() % 2 == 1 ?
+	  holes_copy[holes_copy.size() / 2] -> width.second :
+    (holes_copy[holes_copy.size() / 2 - 1] -> width.second + holes_copy[holes_copy.size() / 2] -> width.second) / 2;
 }
 
 
@@ -4521,7 +4526,7 @@ void RollImage::insertRollImageProperties(MidiFile& midifile) {
 
 	int musiclength = getLastMusicHoleEnd() - getFirstMusicHoleStart();
 
-	double avgholewidth = int(getAverageMusicalHoleWidth()*100.0+0.5)/100.0;
+	double avgholewidth = int(getMedianMusicalHoleWidth() * 100.0 + 0.5) / 100.0;
 
 	double leftCol = m_firstHolePosition - driftCorrection.at(getFirstMusicHoleStart());
 	leftCol = leftCol - leftMarginIndex.at(getFirstMusicHoleStart());
@@ -4687,7 +4692,7 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 
 	int musiclength = getLastMusicHoleEnd() - getFirstMusicHoleStart();
 
-	double avgholewidth = int(getAverageMusicalHoleWidth()*100.0+0.5)/100.0;
+	double avgholewidth = int(getMedianMusicalHoleWidth() * 100.0 + 0.5) / 100.0;
 
 	double leftCol = m_firstHolePosition - driftCorrection.at(getFirstMusicHoleStart());
 	leftCol = leftCol - leftMarginIndex.at(getFirstMusicHoleStart());

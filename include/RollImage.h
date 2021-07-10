@@ -110,7 +110,7 @@ class RollImage : public TiffFile, public RollOptions {
 		int             getSoftMarginLeftWidthMax     (void);
 		int             getSoftMarginRightWidthMax    (void);
 		double          getAverageRollWidth           (void);
-		ulongint        getAverageMusicalHoleWidth    (void);
+		ulongint        getMedianMusicalHoleWidth     () const;
 		ulongint        getLeftMarginWidth            (ulongint rowindex);
 		ulongint        getRightMarginWidth           (ulongint rowindex);
 		double          getAverageSoftMarginTotal     (void);
@@ -341,7 +341,7 @@ class RollImage : public TiffFile, public RollOptions {
 		double     m_dustscore;
 		double     m_dustscorebass;
 		double     m_dustscoretreble;
-		double     m_averageHoleWidth;
+		ulongint   m_averageHoleWidth;
 		bool       m_isMonochrome;
 
 #ifndef DONOTUSEFFT
