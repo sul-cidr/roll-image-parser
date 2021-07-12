@@ -164,7 +164,7 @@ void RollImage::loadGreenChannel(int threshold) {
 //   generate analysis report (including embedded MIDI file).
 //
 
-void RollImage::analyze(void) {
+void RollImage::analyze(const std::string &groupType) {
 #ifndef DONOTUSEFFT
 	start_time = std::chrono::system_clock::now();
 #endif
@@ -215,7 +215,7 @@ void RollImage::analyze(void) {
 	if (m_debug) { cerr << "STEP 21: assignMusicHoleIds" << endl; }
 	assignMusicHoleIds();
 	if (m_debug) { cerr << "STEP 22: groupHoles" << endl; }
-	groupHoles();
+	groupHoles(groupType);
 	if (m_debug) { cerr << "STEP 23: analyzeSnakeBites" << endl; }
 	analyzeSnakeBites();
 	if (m_debug) { cerr << "STEP 24: FINSHED WITH ANALYSIS!" << endl; }
@@ -389,41 +389,51 @@ return; // disabling for now
 //   that are merges of the individual holes.
 //
 
-void RollImage::groupHoles(void) {
+void RollImage::groupHoles(const std::string& groupType) {
 	for (ulongint i=0; i<trackerArray.size(); i++) {
-		groupHoles(i);
+		groupHoles(i, groupType);
 	}
 }
 
 
-void RollImage::groupHoles(ulongint index) {
+void RollImage::groupHoles(ulongint index, const std::string& groupType) {
 	vector<HoleInfo*>& hi = trackerArray[index];
 
-  ulongint length = getMedianMusicalHoleWidth();
+	double length = 0;
+
+  if (groupType == "median") {
+    length = getMedianMusicalHoleWidth();
+  } else if (groupType == "pruned-median") {
+    length = getPrunedMeanMusicalHoleWidth();
+  }
 
 	if (hi.empty()) {
 		return;
 	}
 
 	HoleInfo* lastattack = nullptr;
-	hi[0]->attack = true;
-	hi[0]->offtime = hi[0]->origin.first + hi[0]->width.first;
+	hi[0] -> attack = true;
+	hi[0] -> offtime = hi[0] -> origin.first + hi[0] -> width.first;
 	lastattack = hi[0];
-	for (ulongint i=1; i<hi.size(); i++) {
-		hi[i]->prevOff = hi[i]->origin.first - (hi[i-1]->origin.first + hi[i-1]->width.first);
-		if (hi[i]->prevOff <= length) {
-			hi[i]->attack = false;
+	for (ulongint i = 1; i < hi.size(); i++) {
+		hi[i] -> prevOff = hi[i] -> origin.first - (hi[i-1] -> origin.first + hi[i-1] -> width.first);
+
+//    if (groupType == "local-median") {
+//      length = getLocalMedianMusicalHoleWidth(hi, i);
+//    }
+
+		if (hi[i] -> prevOff <= length) {
+			hi[i] -> attack = false;
 			if (lastattack) {
 				// extend off time of previous attack
-				lastattack->offtime = hi[i]->origin.first + hi[i]->width.first;
+				lastattack -> offtime = hi[i] -> origin.first + hi[i] -> width.first;
 			}
 		} else {
-			hi[i]->attack = true;
-			hi[i]->offtime = hi[i]->origin.first + hi[i]->width.first;
+			hi[i] -> attack = true;
+			hi[i] -> offtime = hi[i] -> origin.first + hi[i] -> width.first;
 			lastattack = hi[i];
 		}
 	}
-
 }
 
 
@@ -3606,6 +3616,20 @@ ulongint RollImage::getRightMarginWidth(ulongint rowindex) {
 
 //////////////////////////////
 //
+// sortMusicalHolesByWidth -- Sorts musical holes by spacing between holes
+//
+
+vector<HoleInfo *> sortMusicalHolesByWidth(vector<HoleInfo *> holes){
+  std::sort(holes.begin(), holes.end(), [](const HoleInfo *first, const HoleInfo *second) {
+    return first -> width.second < second -> width.second;
+  });
+  return holes;
+}
+
+
+
+//////////////////////////////
+//
 // RollImage::getMedianMusicalHoleWidth -- Gets median width of the holes
 //
 
@@ -3618,15 +3642,51 @@ ulongint RollImage::getMedianMusicalHoleWidth() const {
 		return 0;
 	}
 
-	vector<HoleInfo *> holes_copy = holes;
+	vector<HoleInfo *> sorted = sortMusicalHolesByWidth(holes);
 
-	std::sort(holes_copy.begin(), holes_copy.end(), [](const HoleInfo *first, const HoleInfo *second) {
-    return first -> width.second < second -> width.second;
-	});
+	return sorted.size() % 2 == 1 ?
+         sorted[sorted.size() / 2] -> width.second :
+         (sorted[sorted.size() / 2 - 1] -> width.second + sorted[sorted.size() / 2] -> width.second) / 2;
+}
 
-	return holes_copy.size() % 2 == 1 ?
-	  holes_copy[holes_copy.size() / 2] -> width.second :
-    (holes_copy[holes_copy.size() / 2 - 1] -> width.second + holes_copy[holes_copy.size() / 2] -> width.second) / 2;
+
+
+//////////////////////////////
+//
+// RollImage::getPrunedMeanMusicalHoleWidth --
+//
+
+double RollImage::getPrunedMeanMusicalHoleWidth() const {
+  vector<HoleInfo *> sorted = sortMusicalHolesByWidth(holes);
+  ulongint q1 = sorted[sorted.size() / 4] -> width.second;
+  ulongint q3 = sorted[3 / 4 * sorted.size()] -> width.second;
+  double scaled_iqr = 1.5 * (q3 - q1);
+  ulongint sum = 0.0;
+  int total = 0;
+  for (const auto &hole : sorted) {
+    if (hole -> width.second > q3 + scaled_iqr) {
+      continue;
+    }
+
+    sum += hole -> width.second;
+    total++;
+  }
+  return sum / (double)(total);
+}
+
+
+
+//////////////////////////////
+//
+// RollImage::getLocalMedianMusicalHoleWidth --
+//
+
+ulongint RollImage::getLocalMedianMusicalHoleWidth(const vector<HoleInfo *>& hi, ulongint index) const {
+  if (hi.empty()) {
+    return 0;
+  }
+  // TODO: Implement
+  return 0;
 }
 
 

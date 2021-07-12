@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
 	options.define("8|88|88-note|88-hole=b", "Assume 88-note roll");
 	options.define("t|threshold=i:249", "Brightness threshold for hole/paper separation");
 	options.define("m|monochrome=b", "Input image is a monochrome (single-channel) TIFF");
+	options.define("h|group-type=s:median", "Hole grouping algorithm type");
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 1) {
@@ -81,7 +82,7 @@ int main(int argc, char** argv) {
 	roll.setWarningOn();
 	roll.setMonochrome(options.getBoolean("monochrome"));
 	roll.loadGreenChannel(threshold);
-	roll.analyze();
+	roll.analyze(options.getString("group-type"));
 	roll.printRollImageProperties();
 
 	return 0;

@@ -89,7 +89,7 @@ class RollImage : public TiffFile, public RollOptions {
 
 		void	        loadGreenChannel              (int threshold);
 		void	        setMonochrome                 (bool value);
-		void            analyze                       (void);
+		void            analyze                       (const std::string &groupType = "median");
 		void            analyzeHoles                  (void);
 		void            mergePixelOverlay             (std::fstream& output);
 		void            markHoleBBs                   (void);
@@ -111,6 +111,8 @@ class RollImage : public TiffFile, public RollOptions {
 		int             getSoftMarginRightWidthMax    (void);
 		double          getAverageRollWidth           (void);
 		ulongint        getMedianMusicalHoleWidth     () const;
+    double          getPrunedMeanMusicalHoleWidth () const;
+    ulongint        getLocalMedianMusicalHoleWidth(const vector<HoleInfo *>& hi, ulongint index) const;
 		ulongint        getLeftMarginWidth            (ulongint rowindex);
 		ulongint        getRightMarginWidth           (ulongint rowindex);
 		double          getAverageSoftMarginTotal     (void);
@@ -289,8 +291,8 @@ class RollImage : public TiffFile, public RollOptions {
 		void       recalculateFirstMusicHole   (void);
 		void       removeBadLeaderHoles        (void);
 		void       addDriftInfoToHoles         (void);
-		void       groupHoles                  (void);
-		void       groupHoles                  (ulongint index);
+		void       groupHoles                  (const std::string& groupType = "median");
+		void       groupHoles                  (ulongint index, const std::string& groupType = "median");
 		void       describeTears               (void);
 		ulongint   processTearLeft             (ulongint startrow, ulongint startcol);
 		ulongint   processTearRight            (ulongint startrow, ulongint startcol);
