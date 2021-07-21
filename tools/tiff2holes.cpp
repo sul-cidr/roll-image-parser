@@ -80,9 +80,10 @@ int main(int argc, char** argv) {
 
 	roll.setDebugOn();
 	roll.setWarningOn();
+  roll.setGroupType(options.getString("group-type"));
 	roll.setMonochrome(options.getBoolean("monochrome"));
 	roll.loadGreenChannel(threshold);
-	roll.analyze(options.getString("group-type"));
+	roll.analyze();
 	roll.printRollImageProperties();
 
 	return 0;

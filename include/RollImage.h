@@ -89,7 +89,7 @@ class RollImage : public TiffFile, public RollOptions {
 
 		void	        loadGreenChannel              (int threshold);
 		void	        setMonochrome                 (bool value);
-		void            analyze                       (const std::string &groupType = "median");
+		void            analyze                       ();
 		void            analyzeHoles                  (void);
 		void            mergePixelOverlay             (std::fstream& output);
 		void            markHoleBBs                   (void);
@@ -112,6 +112,7 @@ class RollImage : public TiffFile, public RollOptions {
 		double          getAverageRollWidth           (void);
 		ulongint        getMedianMusicalHoleWidth     () const;
     double          getPrunedMeanMusicalHoleWidth () const;
+    void            setGroupType                  (const std::string &type);
     ulongint        getLocalMedianMusicalHoleWidth(const vector<HoleInfo *>& hi, ulongint index) const;
 		ulongint        getLeftMarginWidth            (ulongint rowindex);
 		ulongint        getRightMarginWidth           (ulongint rowindex);
@@ -291,8 +292,8 @@ class RollImage : public TiffFile, public RollOptions {
 		void       recalculateFirstMusicHole   (void);
 		void       removeBadLeaderHoles        (void);
 		void       addDriftInfoToHoles         (void);
-		void       groupHoles                  (const std::string& groupType = "median");
-		void       groupHoles                  (ulongint index, const std::string& groupType = "median");
+		void       groupHoles                  ();
+		void       groupHoles                  (ulongint index);
 		void       describeTears               (void);
 		ulongint   processTearLeft             (ulongint startrow, ulongint startcol);
 		ulongint   processTearRight            (ulongint startrow, ulongint startcol);
@@ -345,6 +346,8 @@ class RollImage : public TiffFile, public RollOptions {
 		double     m_dustscoretreble;
 		ulongint   m_averageHoleWidth;
 		bool       m_isMonochrome;
+
+		std::string groupType = "median";
 
 #ifndef DONOTUSEFFT
 		std::chrono::system_clock::time_point start_time;

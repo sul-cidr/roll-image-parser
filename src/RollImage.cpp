@@ -164,7 +164,7 @@ void RollImage::loadGreenChannel(int threshold) {
 //   generate analysis report (including embedded MIDI file).
 //
 
-void RollImage::analyze(const std::string &groupType) {
+void RollImage::analyze() {
 #ifndef DONOTUSEFFT
 	start_time = std::chrono::system_clock::now();
 #endif
@@ -215,7 +215,7 @@ void RollImage::analyze(const std::string &groupType) {
 	if (m_debug) { cerr << "STEP 21: assignMusicHoleIds" << endl; }
 	assignMusicHoleIds();
 	if (m_debug) { cerr << "STEP 22: groupHoles" << endl; }
-	groupHoles(groupType);
+	groupHoles();
 	if (m_debug) { cerr << "STEP 23: analyzeSnakeBites" << endl; }
 	analyzeSnakeBites();
 	if (m_debug) { cerr << "STEP 24: FINSHED WITH ANALYSIS!" << endl; }
@@ -389,21 +389,21 @@ return; // disabling for now
 //   that are merges of the individual holes.
 //
 
-void RollImage::groupHoles(const std::string& groupType) {
+void RollImage::groupHoles() {
 	for (ulongint i=0; i<trackerArray.size(); i++) {
-		groupHoles(i, groupType);
+		groupHoles(i);
 	}
 }
 
 
-void RollImage::groupHoles(ulongint index, const std::string& groupType) {
+void RollImage::groupHoles(ulongint index) {
 	vector<HoleInfo*>& hi = trackerArray[index];
 
 	double length = 0;
 
   if (groupType == "median") {
     length = getMedianMusicalHoleWidth();
-  } else if (groupType == "pruned-median") {
+  } else if (groupType == "pruned-mean") {
     length = getPrunedMeanMusicalHoleWidth();
   }
 
@@ -3674,6 +3674,10 @@ double RollImage::getPrunedMeanMusicalHoleWidth() const {
   return sum / (double)(total);
 }
 
+
+void RollImage::setGroupType(const std::string &type) {
+  groupType = type;
+}
 
 
 //////////////////////////////
