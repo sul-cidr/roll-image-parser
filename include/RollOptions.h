@@ -63,6 +63,10 @@ class RollOptions {
 		int      getExpectedTrackerHoleCount  (void);
 		void     setThreshold                 (int value);
 		int      getThreshold                 (void);
+		double   getPixelsPerInch             (void);
+
+		double   getRollAcceleration          (void);
+		void     setRollAcceleration          (double value);
 
 	protected: // (maybe make private, but will have to create accessor functions)
 		// m_minTrackerSpacingToPaperEdge: minimum distance from paper
@@ -73,6 +77,9 @@ class RollOptions {
 		// m_maxHoleWidth: maximum width of music holes in units of tracker
 		// bar spacings.
 		double	m_maxHoleWidth;
+
+		// m_pixelsPerInch: image resolution, ideally full-resolution/raw
+		double   m_pixelsPerInch;
 
 		// m_aspectRatioThreshold: maximum w/h ratio
 		double   m_aspectRatioThreshold;
@@ -152,17 +159,12 @@ class RollOptions {
 		// m_threshold: brightness threshold (0-255) for separation of paper and non-paper.
 		int m_threshold        = 249;
 
-		// m_tempo_additive_acceleration_per_foot: the roll acceleration emulation.  This
-		// is the amount added to the tempo BPM for after each foot of the roll.  Value of
-		// 0.22 is from Wayne Stankhe.  The tempo is always starting at "60" and the value
-		// is relative, so the 2nd foot will be at tempo 60.22.  This emulation will need
-		// refinement in the future.  Note the the acceleration tempo is different from the 
-		// roll tempo.  The roll tempo is stored in the MIDI file ticks-per-quarter-note value,
-		// which represents the lines of the image per second (i.e., without acceleration emulation).
-		// The accleration is always starts at 60 bpm (equal to the pixel rows per second in the
-		// header), and then increases by the following amount (60.22, 60.44, 60.88) for at each foot.
-		// along the roll.
-		double m_tempo_additive_acceleration_per_foot = 0.22;
+		// roll acceleration emulation, in feet per minute per minute. Values
+		// used are based on aggregateed observations of sound and MIDI
+		// recordings of rolls being played on replica hardware, with note
+		// events aligned with distance measurements from scanned roll images.
+		// Default value is for red Welte rolls
+		double m_rollAcceleration = .3087;
 
 };
 
