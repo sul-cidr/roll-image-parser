@@ -468,10 +468,15 @@ void RollImage::calculateHoleDescriptors(void) {
 
 //////////////////////////////
 //
-// RollImage::assignMidiKeyNumbersToHoles --
+// RollImage::assignMidiKeyNumbersToHoles -- Apply mapping of MIDI numbers to
+//    tracker bar positions, then look for a likely rewind hole and adjust the
+//    assignments if necessary to place the rewind hole in the expected
+//    position.
 //
 
 void RollImage::assignMidiKeyNumbersToHoles(void) {
+	// Apply the current MIDI number to tracker column mappings to all holes
+	// in those columns (because we may just return this with no changes).
 	for (int i=0; i<(int)midiToTrackMapping.size(); i++) {
 		int track = midiToTrackMapping[i];
 		if (track <= 0) {
@@ -489,30 +494,39 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 	if (!rewindholemidi) {
 		// don't know what type of piano roll or there is no rewind hole, so do
 		// not try to make a correction for the expected rewind hole location.
-		// cerr << "REWIND HOLE IS UNDEFINED (set with -r option for red-welte probably)" << endl;
 		return;
 	}
 
-	vector<int> firstHole(trackerArray.size(), 0);
+	// Find the tracker bar index of the most likely rewind hole, which for
+	// most roll types is the latest-appearing first hole in any column
+	// (because the rewind column should have no other holes in it), but for
+	// green Welte rolls, it's the latest-appearing *last* hole in any column
+	// (because the rewind hole shares its column with the bass sfp holes).
+	vector<int> candidateHole(trackerArray.size(), 0);
 	vector<int> midiKey(trackerArray.size(), 0);
-	ulongint maxorigin = 0;
-	ulongint maxmidi   = 0;
-	ulongint maxindex  = 0;
+	ulongint lastHoleRow = 0; // Y coord of current rewind candidate hole
+	ulongint lastHoleMidi = 0; // MIDI number (column) of current candidate
 
 	for (int i=0; i<(int)trackerArray.size(); i++) {
 		if (trackerArray[i].empty()) {
 			continue;
 		}
 		midiKey[i] = trackerArray[i][0]->midikey;
-		firstHole[i] = trackerArray[i][0]->origin.first;
+		if (m_rollType == "welte-green") {
+			candidateHole[i] = trackerArray[i].back()->origin.first;
+		} else {
+			candidateHole[i] = trackerArray[i][0]->origin.first;
+		}
 
-		if (firstHole[i] > maxorigin) {
-			maxorigin = firstHole[i];
-			maxmidi = trackerArray[i][0]->midikey;
-			maxindex = i;
+		if (candidateHole[i] > lastHoleRow) {
+			lastHoleRow = candidateHole[i];
+			lastHoleMidi = midiKey[i];
 		}
 	}
 
+	// This ensures that the MIDI number of the rewind hole is within the
+	// widest possible range of tracker holes as defined by the tracker hole
+	// to MIDI mapping for the roll type.
 	int targetindex = -1;
 	for (int i=1; i<(int)midiKey.size(); i++) {
 		if (midiKey[i] == 0) {
@@ -523,38 +537,35 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		}
 	}
 
-	if (targetindex  < 0) {
-		cerr << "Strange error in RollImage::assignMidiKeyNumbersToHoles()" << endl;
+	if (targetindex < 0) {
+		cerr << "EXPECTED REWIND COLUMN MIDI NUMBER NOT FOUND AMONG PLAUSIBLE TRACKER HOLES" << endl;
 		return;
 	}
 
-	if (rewindholemidi == maxmidi) {
+	if (rewindholemidi == lastHoleMidi) {
 		// everything is OK
-		cerr << "REWIND HOLE IS IN THE EXPECTED LOCATION " << maxmidi << endl;
+		cerr << "REWIND HOLE IS IN THE EXPECTED LOCATION " << lastHoleMidi << endl;
 		return;
 	}
 
 	// likely the tracker bar positions need to be shifted.
 	// check up to +/- 2 tracker bar holes for the rewind hole.
-	vector<int> difference(5,0);
-	int newmaxi = targetindex;
-	int newmaxorigin = firstHole[newmaxi];
+	int bestFitIndex = targetindex;
 
 	for (int i=targetindex-2; i<=targetindex+2; i++) {
-		if (firstHole[i] > firstHole[newmaxi]) {
-			newmaxi = i;
-			newmaxorigin = firstHole[i];
+		if (candidateHole[i] > candidateHole[bestFitIndex]) {
+			bestFitIndex = i;
 		}
 	}
 
-	if (midiKey[newmaxi] == rewindholemidi) {
+	if (midiKey[bestFitIndex] == rewindholemidi) {
 		// everything is most likely OK: this seems to be the correct rewind hole.
 		cerr << "POSITION OF REWIND HOLE PROBABLY OK" << endl;
 		return;
 	}
 
-	int shifting = midiKey[newmaxi] - rewindholemidi;
-	cerr << "SHIFTING HOLE ASSIGNMENTS BY " << shifting << " REWIND HOLE ALIGNMENT" << endl;
+	int shifting = midiKey[bestFitIndex] - rewindholemidi;
+	cerr << "SHIFTING HOLE ASSIGNMENTS BY " << shifting << " FOR REWIND HOLE ALIGNMENT" << endl;
 
 	for (int i=0; i<(int)trackerArray.size(); i++) {
 		for (int j=0; j<(int)trackerArray[i].size(); j++) {
@@ -778,12 +789,92 @@ void RollImage::analyzeMidiKeyMapping(void) {
 		}
 	}
 
-	// This is to keep the MIDI numbers assigned to holes from being misaligned
-	// by 1, but a refactor is needed to prevent cases like this from happening
-	if ((m_rollType == "welte-red") && (position.size() <= 108)) {
-		leftmostIndex += 1;
-		std::cerr << "shifting leftmostIndex for red Welte roll to " << leftmostIndex << std::endl;
+	std::cerr << "Best fit for leftmost index position based on roll dimensions: " << leftmostIndex << std::endl;
+
+	// Note which potential tracker hole columns contain the leftmost and
+	// rightmost (bassmost and treblemost) holes on the roll
+	int firstColumnIndex = 0;
+	int lastColumnIndex = 0;
+
+	for (ulongint i=0; i<trackerArray.size(); i++) {
+		if (trackerArray[i].size() > 0) {
+			firstColumnIndex = i;
+			break;
+		}
 	}
+	for (ulongint i=trackerArray.size()-1; i>=0; i--) {
+		if (trackerArray[i].size() > 0) {
+			lastColumnIndex = i;
+			break;
+		}
+	}
+
+	// Not all of the tracker hole columns will contain peforations; 88-note
+	// rolls for example may not use several of their leftmost or rightmost
+	// columns
+	int detectedColumns = lastColumnIndex - firstColumnIndex + 1;
+
+	std::cerr << "Leftmost position index with holes: " << firstColumnIndex << std::endl;
+	std::cerr << "Rightmost position index with holes: " << lastColumnIndex << std::endl;
+
+    if (detectedColumns != m_trackerHoles) {
+		std::cerr << "WARNING: expected " << m_trackerHoles << " tracker holes, found " << detectedColumns << std::endl;
+	}
+
+	// Scan all plausible windows of m_trackerHoles columns to see if there is
+	// a better "fit", i.e., a leftmostIndex position that covers more holes
+	// than the starting index identified by the positional logic above.
+	//
+	// Range of leftmostIndex positions to try:
+	// Start: Likely first column based on margins, or leftmost column with
+	//        holes, whichever comes first
+	// End: The last column with holes - the expected number of tracker holes,
+	//      or the leftmost column with holes, whichever comes last
+	int bestLeftIndex = leftmostIndex;
+	int mostHolesCovered = 0;
+	int holesInSpan = 0;
+	for (int j=0; j<m_trackerHoles; j++) {
+	    holesInSpan += trackerArray[leftmostIndex+j].size();
+	}
+	mostHolesCovered = holesInSpan;
+
+	std::cerr << "Holes covered by tracker span starting at " << leftmostIndex << ": " << holesInSpan << std::endl;
+	int i = std::min(firstColumnIndex, leftmostIndex);
+
+	int lastLeftIndex = std::max(lastColumnIndex - m_trackerHoles + 1, firstColumnIndex);
+
+	std::cerr << "Starting index range to scan is " << i << " to " << lastLeftIndex << std::endl;
+
+	while (i <= lastLeftIndex) {
+
+		if (i == leftmostIndex) {
+			i++;
+			continue;
+		}
+
+		holesInSpan = 0;
+		for (int j=0; j<m_trackerHoles; j++) {
+			holesInSpan += trackerArray[i+j].size();
+		}
+
+		std::cerr << "Holes covered by tracker span starting at " << i << ": " << holesInSpan << std::endl;
+
+		// Welte rolls tend to misalign by 1 to the left, so if it's a tie
+		// between the first candidate and the next, choose the starting
+		// position to the right
+		if ((holesInSpan > mostHolesCovered) ||
+		    ((holesInSpan == mostHolesCovered) && 
+			 ((m_rollType == "welte-red") || (m_rollType == "welte-green") || (m_rollType == "welte-licensee")) &&
+			 (i == (leftmostIndex + 1)))) {
+			mostHolesCovered = holesInSpan;
+			bestLeftIndex = i;
+		}
+
+		i++;
+	}
+
+	leftmostIndex = bestLeftIndex;
+	std::cerr << "After considering alternatives, leftmostIndex is now " << leftmostIndex << std::endl;	
 
 	// Initialize the MIDI-to-track mapping:
 	midiToTrackMapping.resize(128);
@@ -791,7 +882,7 @@ void RollImage::analyzeMidiKeyMapping(void) {
 
 	// Assign MIDI key positions to the mapping, starting with
 	// the first position.
-	int count = m_treble_midi - m_bass_midi + 1;
+	int count = m_trackerHoles;
 	for (int i=0; i<count; i++) {
 		midiToTrackMapping.at(i+m_bass_midi) = i+leftmostIndex;
 	}
