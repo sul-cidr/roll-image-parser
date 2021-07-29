@@ -64,7 +64,8 @@ void RollImage::clear(void) {
 	m_dustscorebass             = -1.0;
 	m_dustscoretreble           = -1.0;
 	m_averageHoleWidth          = -1.0;
-	m_isMonochrome              = false; 
+	m_isMonochrome              = false;
+	m_useRewindHoleCorrection   = false;
 }
 
 
@@ -124,6 +125,16 @@ string RollImage::my_to_string(int value) {
 //
 void RollImage::setMonochrome(bool value) {
 	m_isMonochrome = value;
+}
+
+
+
+//////////////////////////////
+//
+// RollImage::setRewindCorrection
+//
+void RollImage::setRewindCorrection(bool value) {
+	m_useRewindHoleCorrection = value;
 }
 
 
@@ -491,8 +502,9 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 	}
 
 	int rewindholemidi = getRewindHoleMidi();
-	if (!rewindholemidi) {
-		// don't know what type of piano roll or there is no rewind hole, so do
+	if (!rewindholemidi || !m_useRewindHoleCorrection) {
+		// don't know what type of piano roll or there is no rewind hole, or
+		// cmd line specifies not to trust the rewind hole location, so do
 		// not try to make a correction for the expected rewind hole location.
 		return;
 	}
