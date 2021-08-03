@@ -509,13 +509,13 @@ void RollOptions::setRollType88Note(void) {
 	m_bassNotesTrackStartNumberLeft = 7;
 	m_bassNotesTrackStartMidi = 21;
 
-	// treble expression (not used)
+	// treble expression (not really used except for snakebite accents)
 	m_trebleNotesTrackStartNumberLeft = 51;
 	m_trebleNotesTrackStartMidi = 65;
 	m_trebleExpressionTrackStartNumberLeft = 95;
 	m_trebleExpressionTrackStartMidi = 109;
 
-	hasNoExpressionMidiFileSetup();
+	hasExpressionMidiFileSetup();
 }
 
 
