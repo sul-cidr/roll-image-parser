@@ -4352,7 +4352,7 @@ void RollImage::setMidiFileTempo(MidiFile& midifile) {
 	} else if (m_rollType == "welte-green") {
 		// Peter Phillips's dissertation describes the speed for green Welte
 		// rolls as "seven feet per minute" (p. 121). 7ft/min = 2.1336m/min =
-		// tempo of 70.0532 (* 6 = 420).
+		// tempo of 70.0532 (* 6 = 420)
 		midifile.setTPQ(420);
 		setRollAcceleration(.22336);
 	} else if (m_rollType == "88-note") {
