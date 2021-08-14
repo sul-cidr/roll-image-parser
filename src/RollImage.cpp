@@ -4346,12 +4346,13 @@ void RollImage::generateHoleMidifile(MidiFile& midifile) {
 void RollImage::setMidiFileTempo(MidiFile& midifile) {
 	if (m_rollType == "welte-red") {
 		// TPQ is 6 times the tempo at 300 DPI, (so 591 = 6 * 98.5)
-		// 591 is for Red Welte tempo of 98.5 (~3 meters/minute).
-		midifile.setTPQ(591);
+		// 591 is for Red Welte tempo of 98.5 (~3 meters/minute)
+		// 568 is the currently preferred value, however.
+		midifile.setTPQ(568);
 	} else if (m_rollType == "welte-green") {
 		// Peter Phillips's dissertation describes the speed for green Welte
 		// rolls as "seven feet per minute" (p. 121). 7ft/min = 2.1336m/min =
-		// tempo of 70.0532 (* 6 = 420).
+		// tempo of 70.0532 (* 6 = 420)
 		midifile.setTPQ(420);
 		setRollAcceleration(.22336);
 	} else if (m_rollType == "88-note") {
