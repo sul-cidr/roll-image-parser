@@ -3344,6 +3344,7 @@ void RollImage::recalculateFirstMusicHole(void) {
 	ulongint minrow = getRows() - 1;
 	std::vector<std::vector<HoleInfo*> >& ta = trackerArray;
 	ulongint row;
+	ulongint nextMusicRow = minrow;
 	for (ulongint i=0; i<ta.size(); i++) {
 		for (ulongint j=0; j<ta[i].size(); j++) {
 			if (!ta[i][j]->isMusicHole()) {
@@ -3352,9 +3353,19 @@ void RollImage::recalculateFirstMusicHole(void) {
 			row = ta[i][j]->origin.first;
 			if (row < minrow) {
 				minrow = row;
+			} else if (row < nextMusicRow) {
+				nextMusicRow = row;
 			}
 		}
 	}
+
+	// Use a conservative distance (2.8 ft) so that only punctures and obvious
+	// outliers appearing well above the rest of the roll are disregarded.
+	if ((nextMusicRow > minrow) && ((nextMusicRow - minrow) > 10000)) {
+		cerr << "FIRST MUSIC HOLE MUCH EARLIER THAN NEXT: " << minrow << " -> " << nextMusicRow << ", SKIPPING" << endl;
+		minrow = nextMusicRow;
+	}
+
 	if (minrow > firstMusicRow) {
 		firstMusicRow = minrow;
 		markPosteriorLeader();
