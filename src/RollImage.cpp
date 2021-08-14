@@ -4580,6 +4580,8 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 	}
 
 	if (!m_emulateAcceleration) {
+		midifile.addTempo(0, 0, 60);
+		midifile.sortTracks();
 		return;
 	}
 
