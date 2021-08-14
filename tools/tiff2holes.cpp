@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
 	options.define("8|88|88-note|88-hole=b", "Assume 88-note roll");
 	options.define("t|threshold=i:249", "Brightness threshold for hole/paper separation");
 	options.define("m|monochrome=b", "Input image is a monochrome (single-channel) TIFF");
+	options.define("s|disregard-rewind-hole=b", "Skip rewind hole correction for tracker->MIDI mapping");
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 1) {
@@ -78,6 +79,10 @@ int main(int argc, char** argv) {
 		cerr << "   --65 == for 65-note rolls"     << endl;
 		cerr << "   --88 == for 88-note rolls"     << endl;
 		exit(1);
+	}
+
+    if (options.getBoolean("disregard-rewind-hole")) {
+		roll.setRewindCorrection(false);
 	}
 
 	int threshold = options.getInteger("threshold");
