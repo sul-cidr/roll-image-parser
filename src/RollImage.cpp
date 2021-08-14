@@ -4874,8 +4874,6 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	std::time_t current_time = std::chrono::system_clock::to_time_t(nowtime);
 #endif
 
-	// Among other things, this finds the rewind hole, if present, which is 
-	// reported in the ROLLINFO data
 	assignMidiKeyNumbersToHoles();
 
 	out << "@@ This file describes features extracted from a scan of a piano roll.\n";
