@@ -66,6 +66,7 @@ void RollImage::clear(void) {
 	m_averageHoleWidth          = -1.0;
 	m_isMonochrome              = false;
 	m_useRewindHoleCorrection   = true;
+	m_emulateAcceleration       = false;
 }
 
 
@@ -135,6 +136,16 @@ void RollImage::setMonochrome(bool value) {
 //
 void RollImage::setRewindCorrection(bool value) {
 	m_useRewindHoleCorrection = value;
+}
+
+
+
+//////////////////////////////
+//
+// RollImage::toggleAccelerationEmulation
+//
+void RollImage::toggleAccelerationEmulation(bool value) {
+	m_emulateAcceleration = value;
 }
 
 
@@ -4566,6 +4577,10 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 		if (hi->offtime > maxtime) {
 			maxtime = hi->offtime;
 		}
+	}
+
+	if (!m_emulateAcceleration) {
+		return;
 	}
 
 	// Add acceleration emulation:

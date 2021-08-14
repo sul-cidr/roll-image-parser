@@ -45,6 +45,7 @@ int main(int argc, char** argv) {
 	options.define("t|threshold=i:249", "Brightness threshold for hole/paper separation");
 	options.define("m|monochrome=b", "Input image is a monochrome (single-channel) TIFF");
 	options.define("s|disregard-rewind-hole=b", "Skip rewind hole correction for tracker->MIDI mapping");
+	options.define("e|emulate-roll-acceleration=b", "Add tempo events to note MIDI for acceleration");
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 1) {
@@ -83,6 +84,10 @@ int main(int argc, char** argv) {
 
     if (options.getBoolean("disregard-rewind-hole")) {
 		roll.setRewindCorrection(false);
+	}
+
+	if (options.getBoolean("emulate-roll-acceleration")) {
+		roll.toggleAccelerationEmulation(true);
 	}
 
 	int threshold = options.getInteger("threshold");
