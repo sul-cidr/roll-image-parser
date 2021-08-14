@@ -4995,8 +4995,9 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@ \t\t\taround the hole.\n";
 	out << "@@ ORIGIN_COL:\t\tThe pixel column of the leading edge of the bounding box around" << std::endl;
 	out << "@@ \t\t\tthe hole, bass side.\n";
-	out << "@@ WIDTH_ROW:\t\tThe pixel length of the bounding box around the hole.\n";
-	out << "@@ WIDTH_COL:\t\tThe pixel column of the leading edge of the hole, bass side.\n";
+	out << "@@ WIDTH_ROW:\t\\Length in pixels from the leading row of the hole's bounding box" << std::endl;
+	out << "@@ \t\t\tto the trailing edge's row.\n";
+	out << "@@ WIDTH_COL:\t\tWidth in pixels from the bass-side to the treble-side edge of the hole.\n";
 	out << "@@ CENTROID_ROW:\tThe center of mass row of the hole.\n";
 	out << "@@ CENTROID_COL:\tThe center of mass column of the hole.\n";
 	out << "@@ AREA:\t\tThe area of the hole (in pixels).\n";
