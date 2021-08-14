@@ -65,7 +65,7 @@ void RollImage::clear(void) {
 	m_dustscoretreble           = -1.0;
 	m_averageHoleWidth          = -1.0;
 	m_isMonochrome              = false;
-	m_useRewindHoleCorrection   = false;
+	m_useRewindHoleCorrection   = true;
 }
 
 
