@@ -164,7 +164,7 @@ class RollOptions {
 		// recordings of rolls being played on replica hardware, with note
 		// events aligned with distance measurements from scanned roll images.
 		// Default value is for red Welte rolls
-		double m_rollAcceleration = .3087;
+		double m_rollAcceleration = .3147;
 
 };
 
