@@ -4874,6 +4874,10 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	std::time_t current_time = std::chrono::system_clock::to_time_t(nowtime);
 #endif
 
+	// Among other things, this finds the rewind hole, if present, which is 
+	// reported in the ROLLINFO data
+	assignMidiKeyNumbersToHoles();
+
 	out << "@@ This file describes features extracted from a scan of a piano roll.\n";
 	out << "@@ The contents of this file can be converted to JSON format with the\n";
 	out << "@@ ATON.js library from http://aton.sapp.org\n";
@@ -5028,8 +5032,6 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@ \t\t\t   HPIXCOR_TRAIL:\tHorizontal pixel correction of the hole's trailing edge.\n";
 	out << "@@\n";
 	out << "\n";
-
-	assignMidiKeyNumbersToHoles();
 
 	out << "@@BEGIN: HOLES\n\n";
 	for (ulongint i=0; i<holes.size(); i++) {
