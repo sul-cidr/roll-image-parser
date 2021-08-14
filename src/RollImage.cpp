@@ -4308,18 +4308,6 @@ void RollImage::generateHoleMidifile(MidiFile& midifile) {
 
 	// should also add bad holes into track 5 here.
 
-	// add tempo correction
-	double timevalue = 1.0;
-	double tempo;
-	ulongint curtime = 0;
-	double increment = 0.0;
-	while (curtime < maxtime - mintime) {
-		tempo = 60 / timevalue + increment;
-      midifile.addTempo(0, curtime, tempo);
-		curtime += 3600;
-		increment += m_tempo_additive_acceleration_per_foot;
-	}
-
 	midifile.sortTracks();
 }
 #endif
@@ -4335,13 +4323,15 @@ void RollImage::generateHoleMidifile(MidiFile& midifile) {
 void RollImage::setMidiFileTempo(MidiFile& midifile) {
 	if (m_rollType == "welte-red") {
 		// TPQ is 6 times the tempo at 300 DPI, (so 591 = 6 * 98.5)
-		// 591 is for Red Welte tempo of 98.5 (~3 meters/minute).
-		midifile.setTPQ(591);
+		// 591 is for Red Welte tempo of 98.5 (~3 meters/minute)
+		// 568 is the currently preferred value, however.
+		midifile.setTPQ(568);
 	} else if (m_rollType == "welte-green") {
 		// Peter Phillips's dissertation describes the speed for green Welte
 		// rolls as "seven feet per minute" (p. 121). 7ft/min = 2.1336m/min =
-		// tempo of 70.0532 (* 6 = 420)
+		// tempo of 70.0532 (* 6 = 420).
 		midifile.setTPQ(420);
+		setRollAcceleration(.22336);
 	} else if (m_rollType == "88-note") {
 		midifile.setTPQ(6 * 60); 
 	} else {
@@ -4531,15 +4521,28 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 	}
 
 	// Add acceleration emulation:
-	double timevalue = 1.0;
-	double tempo;
-	ulongint curtime = 0;
-	double increment = 0.0;
-	while (curtime < maxtime - mintime) {
-		tempo = 60 / timevalue + increment;
-      midifile.addTempo(0, curtime, tempo);
-		curtime += 3600;
-		increment += m_tempo_additive_acceleration_per_foot;
+	// Initial tempo is ticks per beat * 60bpm (in ticks per minute)
+	// Calculate initial velocity in feet per minute by dividing the initial 
+	// tempo in ticks/minute by pixels (ticks) per foot, which is usually
+	// 300 PPI, 1 pixel = 1 tick; 1 ft = 3600 pixels
+	double tpq = (double)midifile.getTPQ();
+	double ppi = getPixelsPerInch();
+	double ticksPerFoot = ppi * 12.0;
+	double currentTempo = 60;
+	double initialSpeed = (tpq * currentTempo) / ticksPerFoot; // ft/min
+	double currentSpeed = initialSpeed;
+	double currentMinute = 0.0;
+	double accelFactor = getRollAcceleration(); // feet per minute per minute
+	ulongint currentTick = 0;
+	double minuteDivision = .1;
+
+	while (currentTick < maxtime - mintime) {
+		cerr << "TEMPO EVENT AT TICK " << currentTick << " tempo " << currentTempo << " minute " << currentMinute << " speed " << currentSpeed << endl;
+		midifile.addTempo(0, currentTick, currentTempo);
+		currentMinute += minuteDivision;
+		currentTick += (int)(currentSpeed * minuteDivision * ticksPerFoot);
+		currentSpeed = initialSpeed + currentMinute * accelFactor;
+		currentTempo = currentSpeed * ticksPerFoot / tpq;
 	}
 
 	midifile.sortTracks();
@@ -4650,7 +4653,7 @@ void RollImage::insertRollImageProperties(MidiFile& midifile) {
 	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@THRESHOLD:\t\t"         << getThreshold()                << "";
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@LENGTH_DPI:\t\t"        << 300.25                        << "ppi";
+	ss << "@LENGTH_DPI:\t\t"        << getPixelsPerInch()            << "ppi";
 	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@IMAGE_WIDTH:\t\t"       << getCols()                     << "px";
 	midifile.addText(0, 0, ss.str()); ss.str("");
@@ -4888,7 +4891,7 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@DRUID:\t\t\t"           << getDruid()                    << "\n";
 	out << "@ROLL_TYPE:\t\t"         << getRollType()                 << "\n";
 	out << "@THRESHOLD:\t\t"         << getThreshold()                << "\n";
-	out << "@LENGTH_DPI:\t\t"        << 300.25                        << "ppi\n";
+	out << "@LENGTH_DPI:\t\t"        << getPixelsPerInch()            << "ppi\n";
 	out << "@IMAGE_WIDTH:\t\t"       << getCols()                     << "px\n";
 	out << "@IMAGE_LENGTH:\t\t"      << getRows()                     << "px\n";
 	out << "@ROLL_WIDTH:\t\t"        << averageRollWidth              << "px\n";
