@@ -106,6 +106,7 @@ class RollImage : public TiffFile, public RollOptions {
 		ulongint        getPreleaderIndex             (void);
 		ulongint        getFirstMusicHoleStart        (void);
 		ulongint        getLastMusicHoleEnd           (void);
+		ulongint        getRewindHoleEnd              (void);
 		int             getSoftMarginLeftWidth        (ulongint rowindex);
 		int             getSoftMarginRightWidth       (ulongint rowindex);
 		int             getSoftMarginLeftWidthMax     (void);
@@ -335,6 +336,7 @@ class RollImage : public TiffFile, public RollOptions {
 		ulongint   leaderIndex;
 		ulongint   firstMusicRow;
 		ulongint   lastMusicRow;
+		ulongint   rewindHoleEnd;
 		double     m_lastHolePosition;
 		double     m_firstHolePosition;
 		double     m_dustscore;

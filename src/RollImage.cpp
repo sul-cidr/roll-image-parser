@@ -58,6 +58,7 @@ void RollImage::clear(void) {
 	leaderIndex                 = 0;
 	firstMusicRow               = 0;
 	lastMusicRow                = 0;
+	rewindHoleEnd               = 0;
 	m_lastHolePosition          = 0.0;
 	m_firstHolePosition         = 0.0;
 	m_dustscore                 = -1.0;
@@ -3430,6 +3431,17 @@ ulongint RollImage::getLastMusicHoleEnd(void) {
 
 //////////////////////////////
 //
+// RollImage::getRewindHoleEnd --
+//
+
+ulongint RollImage::getRewindHoleEnd(void) {
+	return rewindHoleEnd;
+}
+
+
+
+//////////////////////////////
+//
 // RollImage::markHoleShifts --
 //
 
@@ -4708,6 +4720,8 @@ void RollImage::insertRollImageProperties(MidiFile& midifile) {
 	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@LAST_HOLE:\t\t"         << getLastMusicHoleEnd()         << "px";
 	midifile.addText(0, 0, ss.str()); ss.str("");
+	ss << "@REWIND_HOLE:\t\t"       << getRewindHoleEnd()            << "px";
+	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@END_MARGIN:\t\t"        << getRows() - getLastMusicHoleEnd() << "px";
 	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@MUSICAL_LENGTH:\t"      << musiclength                   << "px";
@@ -4872,6 +4886,7 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@ FIRST_HOLE:\t\t"        << "Pixel row of the first musical hole." << std::endl;
 	out << "@@ LAST_HOLE:\t\t"         << "Pixel row of the end of the last musical hole. Currently includes" << std::endl;
 	out << "@@ \t\t\trewind holes and any punches after the rewind." << std::endl;
+	out << "@@ REWIND_HOLE:\t\t"       << "Last pixel row of the detected rewind hole if found, otherwise 0." << std::endl;
 	out << "@@ END_MARGIN:\t\t"        << "IMAGE_LENGTH - LAST_HOLE." << std::endl;
 	out << "@@ MUSICAL_LENGTH:\t"      << "Pixel row count from the first music hole to the end of" << std::endl;
 	out << "@@ \t\t\tthe last music hole." << std::endl;
@@ -4930,6 +4945,7 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@LEADER_ROW:\t\t"        << getLeaderIndex()              << "px\n";
 	out << "@FIRST_HOLE:\t\t"        << getFirstMusicHoleStart()      << "px\n";
 	out << "@LAST_HOLE:\t\t"         << getLastMusicHoleEnd()         << "px\n";
+	out << "@REWIND_HOLE:\t\t"       << getRewindHoleEnd()            << "px\n";
 	out << "@END_MARGIN:\t\t"        << getRows() - getLastMusicHoleEnd() << "px\n";
 	out << "@MUSICAL_LENGTH:\t"      << musiclength                   << "px\n";
 	out << "@MUSICAL_HOLES:\t\t"     << holes.size()                  << "\n";
