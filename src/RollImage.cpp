@@ -895,42 +895,6 @@ void RollImage::analyzeMidiKeyMapping(void) {
 
 		i++;
 	}
-	mostHolesCovered = holesInSpan;
-
-	std::cerr << "Holes covered by tracker span starting at " << leftmostIndex << ": " << holesInSpan << std::endl;
-	int i = std::min(firstColumnIndex, leftmostIndex);
-
-	int lastLeftIndex = std::max(lastColumnIndex - m_trackerHoles + 1, firstColumnIndex);
-
-	std::cerr << "Starting index range to scan is " << i << " to " << lastLeftIndex << std::endl;
-
-	while (i <= lastLeftIndex) {
-
-		if (i == leftmostIndex) {
-			i++;
-			continue;
-		}
-
-		holesInSpan = 0;
-		for (int j=0; j<m_trackerHoles; j++) {
-			holesInSpan += trackerArray[i+j].size();
-		}
-
-		std::cerr << "Holes covered by tracker span starting at " << i << ": " << holesInSpan << std::endl;
-
-		// Welte rolls tend to misalign by 1 to the left, so if it's a tie
-		// between the first candidate and the next, choose the starting
-		// position to the right
-		if ((holesInSpan > mostHolesCovered) ||
-		    ((holesInSpan == mostHolesCovered) && 
-			 ((m_rollType == "welte-red") || (m_rollType == "welte-green") || (m_rollType == "welte-licensee")) &&
-			 (i == (leftmostIndex + 1)))) {
-			mostHolesCovered = holesInSpan;
-			bestLeftIndex = i;
-		}
-
-		i++;
-	}
 
 	leftmostIndex = bestLeftIndex;
 	std::cerr << "After considering alternatives, leftmostIndex is now " << leftmostIndex << std::endl;	
