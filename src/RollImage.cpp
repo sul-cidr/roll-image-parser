@@ -503,9 +503,8 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 	}
 
 	int rewindholemidi = getRewindHoleMidi();
-	if (!rewindholemidi || !m_useRewindHoleCorrection) {
-		// don't know what type of piano roll or there is no rewind hole, or
-		// cmd line specifies not to trust the rewind hole location, so do
+	if (!rewindholemidi) {
+		// don't know what type of piano roll or there is no rewind hole, so do
 		// not try to make a correction for the expected rewind hole location.
 		return;
 	}
@@ -555,8 +554,25 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		return;
 	}
 
-	if (rewindholemidi == lastHoleMidi) {
-		// everything is OK
+	// Tentatively set the pixel row for the end of the rewind hole based
+	// on the first last or last first hole in its expected tracker column.
+	if (m_rollType == "welte-green") {
+		// Rewind hole for Welte green rolls shares its column with other
+		// expression holes, so we have to use the very last hole.
+		rewindHoleEnd = trackerArray[targetindex].back()->origin.first + 
+		                trackerArray[targetindex].back()->width.first;
+	} else {
+		// Other roll types theoretically shouldn't have any holes prior to the
+		// rewind hole in its column, but could have holes afterwards (e.g.,
+		// modern recut rolls with test punches at the end), so we just use
+		// the first hole in the expected rewind column.
+		rewindHoleEnd = trackerArray[targetindex][0]->origin.first +
+		                trackerArray[targetindex][0]->width.first;
+	}
+
+	if (rewindholemidi == lastHoleMidi || !m_useRewindHoleCorrection) {
+		// everything is OK, or cmd line specifies not to adjust the rewind
+		// hole location
 		cerr << "REWIND HOLE IS IN THE EXPECTED LOCATION " << lastHoleMidi << endl;
 		return;
 	}
@@ -575,6 +591,15 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		// everything is most likely OK: this seems to be the correct rewind hole.
 		cerr << "POSITION OF REWIND HOLE PROBABLY OK" << endl;
 		return;
+	}
+
+	// Change the pixel row of the end of the rewind hole to use best candidate
+	if (m_rollType == "welte-green") {
+		rewindHoleEnd = trackerArray[bestFitIndex].back()->origin.first +
+		                trackerArray[bestFitIndex].back()->width.first;
+	} else {
+		rewindHoleEnd = trackerArray[bestFitIndex][0]->origin.first +
+						trackerArray[bestFitIndex][0]->width.first;
 	}
 
 	int shifting = midiKey[bestFitIndex] - rewindholemidi;
