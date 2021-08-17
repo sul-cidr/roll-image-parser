@@ -520,6 +520,8 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		return;
 	}
 
+	cerr << "Rewind hole MIDI is " << rewindholemidi << endl;
+
 	// Find the tracker bar index of the most likely rewind hole, which for
 	// most roll types is the latest-appearing first hole in any column
 	// (because the rewind column should have no other holes in it), but for
@@ -535,11 +537,13 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 			continue;
 		}
 		midiKey[i] = trackerArray[i][0]->midikey;
-		if (m_rollType == "welte-green") {
+		//if (m_rollType == "welte-green") {
 			candidateHole[i] = trackerArray[i].back()->origin.first;
-		} else {
-			candidateHole[i] = trackerArray[i][0]->origin.first;
-		}
+		//} else {
+		//	candidateHole[i] = trackerArray[i][0]->origin.first;
+		//}
+
+		cerr << "candidate hole position at index " << i << ": " << candidateHole[i] << " MIDI " << midiKey[i] << endl;
 
 		if (candidateHole[i] > lastHoleRow) {
 			lastHoleRow = candidateHole[i];
@@ -547,13 +551,19 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		}
 	}
 
+	cerr << "rewind hole row " << lastHoleRow << ", rewind hole MIDI " << lastHoleMidi << endl;
+
 	// This ensures that the MIDI number of the rewind hole is within the
 	// widest possible range of tracker holes as defined by the tracker hole
 	// to MIDI mapping for the roll type.
 	int targetindex = -1;
 	for (int i=1; i<(int)midiKey.size(); i++) {
+
 		if (midiKey[i] == 0) {
 			midiKey[i] = midiKey[i-1] + 1;
+			cerr << "index " << i << " has no MIDI key mapping, set it to " << midiKey[i] << endl;
+		} else {
+			cerr << "index " << i << " MIDI key mapping " << midiKey[i] << endl;
 		}
 		if (midiKey[i] == rewindholemidi) {
 			targetindex = i;
@@ -575,11 +585,16 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 	// check up to +/- 2 tracker bar holes for the rewind hole.
 	int bestFitIndex = targetindex;
 
+	cerr << "before check, best rewind hole index is " << bestFitIndex << " MIDI " << midiKey[bestFitIndex] << endl;
+
 	for (int i=targetindex-2; i<=targetindex+2; i++) {
+		cerr << "considering hole index " << i << " with last hole at " << candidateHole[i] << endl;
 		if (candidateHole[i] > candidateHole[bestFitIndex]) {
 			bestFitIndex = i;
 		}
 	}
+
+	cerr << "after check, best rewind hole index is " << bestFitIndex << " MIDI " << midiKey[bestFitIndex] << endl;
 
 	if (midiKey[bestFitIndex] == rewindholemidi) {
 		// everything is most likely OK: this seems to be the correct rewind hole.
@@ -587,7 +602,7 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		return;
 	}
 
-	int shifting = midiKey[bestFitIndex] - rewindholemidi;
+	int shifting = rewindholemidi - midiKey[bestFitIndex];
 	cerr << "SHIFTING HOLE ASSIGNMENTS BY " << shifting << " FOR REWIND HOLE ALIGNMENT" << endl;
 
 	for (int i=0; i<(int)trackerArray.size(); i++) {
@@ -596,6 +611,12 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 				trackerArray[i][j]->midikey += shifting;
 			}
 			trackerArray[i][j]->track += shifting;
+		}
+	}
+
+	for (int i=0; i<(int)midiToTrackMapping.size(); i++) {
+		if (midiToTrackMapping[i] > 0) {
+			midiToTrackMapping[i] += shifting;
 		}
 	}
 
