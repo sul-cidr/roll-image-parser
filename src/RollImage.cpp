@@ -899,9 +899,6 @@ void RollImage::analyzeMidiKeyMapping(void) {
 	leftmostIndex = bestLeftIndex;
 	std::cerr << "After considering alternatives, leftmostIndex is now " << leftmostIndex << std::endl;	
 
-	leftmostIndex = bestLeftIndex;
-	std::cerr << "After considering alternatives, leftmostIndex is now " << leftmostIndex << std::endl;	
-
 	// Initialize the MIDI-to-track mapping:
 	midiToTrackMapping.resize(128);
 	std::fill(midiToTrackMapping.begin(), midiToTrackMapping.end(), 0);
