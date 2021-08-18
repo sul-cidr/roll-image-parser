@@ -103,34 +103,34 @@ std::ostream& HoleInfo::printAton(std::ostream& out) {
 	if (!id.empty()) {
 		out << "@ID:\t\t" << id << std::endl;
 	}
-	out << "@ORIGIN_ROW:\t"   << origin.first     << "px"  << std::endl;
-	out << "@ORIGIN_COL:\t"   << origin.second    << "px"  << std::endl;
-	out << "@WIDTH_ROW:\t"    << width.first      << "px"  << std::endl;
-	out << "@WIDTH_COL:\t"    << width.second     << "px"  << std::endl;
-	out << "@CENTROID_ROW:\t" << centroid.first   << "px"  << std::endl;
-	out << "@CENTROID_COL:\t" << centroid.second  << "px"  << std::endl;
-	out << "@AREA:\t\t"       << area             << "px"  << std::endl;
-	out << "@PERIMETER:\t"    << perimeter        << "px"  << std::endl;
+	out << "@ORIGIN_ROW:\t"   << origin.first     << std::endl;
+	out << "@ORIGIN_COL:\t"   << origin.second    << std::endl;
+	out << "@WIDTH_ROW:\t"    << width.first      << std::endl;
+	out << "@WIDTH_COL:\t"    << width.second     << std::endl;
+	out << "@CENTROID_ROW:\t" << centroid.first   << std::endl;
+	out << "@CENTROID_COL:\t" << centroid.second  << std::endl;
+	out << "@AREA:\t\t"       << area             << std::endl;
+	out << "@PERIMETER:\t"    << perimeter        << std::endl;
 	out << "@CIRCULARITY:\t"  << int(circularity*100.0+0.5)/100.0 << std::endl;
 
 	if (attack) {
-		out << "@NOTE_ATTACK:\t" << origin.first << "px" << std::endl;
-		out << "@OFF_TIME:\t"    << offtime      << "px" << std::endl;
+		out << "@NOTE_ATTACK:\t" << origin.first  << std::endl;
+		out << "@OFF_TIME:\t"    << offtime       << std::endl;
 	}
-	out << "@TRACKER_HOLE:\t" << track               << std::endl;
-	out << "@MIDI_KEY:\t"     << midikey             << std::endl;
+	out << "@TRACKER_HOLE:\t" << track            << std::endl;
+	out << "@MIDI_KEY:\t"     << midikey          << std::endl;
 
 	#define HOLE_SHIFT 3.0
 
 	if (std::fabs(leadinghcor - trailinghcor) < HOLE_SHIFT) {
 		double value = (leadinghcor + trailinghcor) / 2.0;
 		value = int(value * 10 + 0.5)/10.0;
-		out << "@HPIXCOR:\t"        << value   << "px" << std::endl;
+		out << "@HPIXCOR:\t"        << value      << std::endl;
 	} else {
 		double value1 = int(leadinghcor*10.0+0.5)/10.0;
 		double value2 = int(trailinghcor*10.0+0.5)/10.0;
-		out << "@HPIXCOR_LEAD:\t"  << value1   << "px" << std::endl;
-		out << "@HPIXCOR_TRAIL:\t" << value2   << "px" << std::endl;
+		out << "@HPIXCOR_LEAD:\t"  << value1      << std::endl;
+		out << "@HPIXCOR_TRAIL:\t" << value2      << std::endl;
 	}
 
 	// if (!isMusicHole) {
