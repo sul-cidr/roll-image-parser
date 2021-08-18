@@ -555,9 +555,6 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 
 		if (midiKey[i] == 0) {
 			midiKey[i] = midiKey[i-1] + 1;
-			cerr << "index " << i << " has no MIDI key mapping, set it to " << midiKey[i] << endl;
-		} else {
-			cerr << "index " << i << " MIDI key mapping " << midiKey[i] << endl;
 		}
 		if (midiKey[i] == rewindholemidi) {
 			targetindex = i;
@@ -831,6 +828,12 @@ void RollImage::analyzeMidiKeyMapping(void) {
 	for (ulongint i=0; i<trackerArray.size(); i++) {
 		if (trackerArray[i].size() > 0) {
 			firstColumnIndex = i;
+			break;
+		}
+	}
+	for (ulongint i=trackerArray.size()-1; i>=0; i--) {
+		if (trackerArray[i].size() > 0) {
+			lastColumnIndex = i;
 			break;
 		}
 	}
