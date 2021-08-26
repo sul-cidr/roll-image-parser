@@ -560,7 +560,7 @@ int RollOptions::getRewindHoleMidi(void) {
 //     distance which will force the merging of adjacent holes.
 //
 
-double RollOptions::getBridgeFactor(void) {
+double RollOptions::getBridgeFactor() const {
 	return m_bridgeFactor;
 }
 

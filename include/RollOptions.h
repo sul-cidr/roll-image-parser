@@ -58,7 +58,7 @@ class RollOptions {
 		int      getRewindHoleBassIndex       (void);
 		int      getRewindHoleMidi            (void);
 
-		double   getBridgeFactor              (void);
+		double   getBridgeFactor              () const;
 		int      getExpectedTrackerHoleCount  (void);
 		void     setThreshold                 (int value);
 		int      getThreshold                 (void);

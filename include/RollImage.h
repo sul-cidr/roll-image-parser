@@ -110,10 +110,12 @@ class RollImage : public TiffFile, public RollOptions {
 		int             getSoftMarginLeftWidthMax     (void);
 		int             getSoftMarginRightWidthMax    (void);
 		double          getAverageRollWidth           (void);
-		ulongint        getMedianMusicalHoleWidth     () const;
+    double          getLength                     (ulongint index = 0) const;
+    double          getAverageMusicalHoleWidth    () const;
+		double          getMedianMusicalHoleWidth     () const;
     double          getPrunedMeanMusicalHoleWidth () const;
+    double          getMedianCentroidDist         (ulongint index) const;
     void            setGroupType                  (const std::string &type);
-    ulongint        getLocalMedianMusicalHoleWidth(const vector<HoleInfo *>& hi, ulongint index) const;
 		ulongint        getLeftMarginWidth            (ulongint rowindex);
 		ulongint        getRightMarginWidth           (ulongint rowindex);
 		double          getAverageSoftMarginTotal     (void);
