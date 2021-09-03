@@ -110,11 +110,11 @@ class RollImage : public TiffFile, public RollOptions {
 		int             getSoftMarginLeftWidthMax     (void);
 		int             getSoftMarginRightWidthMax    (void);
 		double          getAverageRollWidth           (void);
-    double          getLength                     (ulongint index = 0) const;
-    double          getAverageMusicalHoleWidth    () const;
-		double          getMedianMusicalHoleWidth     () const;
-    double          getPrunedMeanMusicalHoleWidth () const;
-    double          getMedianCentroidDist         (ulongint index) const;
+    ulongint        getLength                     (ulongint index = 0) const;
+    ulongint        getAverageMusicalHoleWidth    () const;
+		ulongint        getMedianMusicalHoleWidth     () const;
+    ulongint        getPrunedMeanMusicalHoleWidth () const;
+    ulongint        getMedianCentroidDist         (ulongint index) const;
     void            setGroupType                  (const std::string &type);
 		ulongint        getLeftMarginWidth            (ulongint rowindex);
 		ulongint        getRightMarginWidth           (ulongint rowindex);
@@ -347,7 +347,7 @@ class RollImage : public TiffFile, public RollOptions {
 		ulongint   m_averageHoleWidth;
 		bool       m_isMonochrome;
 
-		std::string groupType = "median";
+		std::string groupType = "histogram";
 
 #ifndef DONOTUSEFFT
 		std::chrono::system_clock::time_point start_time;
