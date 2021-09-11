@@ -3732,6 +3732,12 @@ ulongint RollImage::getLength(ulongint index) const {
     return getMedianMusicalHoleWidth();
   } else {
     vector<int> histogram(100, 0);
+    ulongint avg = getAverageMusicalHoleWidth();
+    std::pair<ulongint, ulongint> range = { avg / 2, 3 * avg / 2 };
+    if (histogram.size() < range.second) {
+      return getMedianMusicalHoleWidth();
+    }
+
     for (int i = 1; i < trackerArray[index].size(); ++i) {
       ulongint distance = trackerArray[index][i] -> origin.first - (trackerArray[index][i - 1] -> origin.first + trackerArray[index][i - 1] -> width.first);
       if (distance < histogram.size()) {
@@ -3739,15 +3745,22 @@ ulongint RollImage::getLength(ulongint index) const {
       }
     }
 
-    ulongint avg = getAverageMusicalHoleWidth();
-    std::pair<ulongint, ulongint> range = { avg / 2, 3 * avg / 2 };
-    if (histogram.size() < range.second) {
-      return getMedianMusicalHoleWidth();
+    vector<double> smoothed(100, 0);
+
+    if (avg > 0) {
+      for (ulongint i = avg; i < histogram.size() - avg; ++i) {
+        double sum = 0.0;
+        for (ulongint j = i - avg; j <= i + avg; ++j) {
+          sum += histogram[j];
+        }
+        double total = sum / (2 * (int)avg + 1);
+        smoothed[i] = int(total * 10.0 + 0.5) / 10.0;
+      }
     }
 
     std::pair<std::pair<ulongint, ulongint>, std::pair<ulongint, ulongint>> mins = { { -1, -1 }, { -1, -1 } };
 
-    for (ulongint i = range.first; i < avg; ++i) {
+    for (ulongint i = avg; i < range.first; --i) {
       if (histogram[i] < mins.first.second) {
         mins.first.first = i;
         mins.first.second = histogram[i];
@@ -3761,16 +3774,13 @@ ulongint RollImage::getLength(ulongint index) const {
       }
     }
 
-    if (mins.first.second < mins.second.second) {
+    if (mins.first.second <= mins.second.second) {
       std::cerr << "  - HOLE GROUPING CUTOFF LENGTH: " << mins.first.first << "px." << std::endl;
       return mins.first.first;
-    } else if (mins.first.second > mins.second.second) {
-      std::cerr << "  - HOLE GROUPING CUTOFF LENGTH: " << mins.second.first << "px." << std::endl;
-      return mins.second.first;
     }
 
-    std::cerr << "  - HOLE GROUPING CUTOFF LENGTH: " << (mins.first.first + mins.second.first) / 2 << "px." << std::endl;
-    return (mins.first.first + mins.second.first) / 2;
+    std::cerr << "  - HOLE GROUPING CUTOFF LENGTH: " << mins.second.first << "px." << std::endl;
+    return mins.second.first;
   }
 }
 
