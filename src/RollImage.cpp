@@ -3745,17 +3745,18 @@ ulongint RollImage::getLength(ulongint index) const {
       }
     }
 
+    const short windowHalf = 6;
     vector<double> smoothed;
 
     for (int i = 0; i < histogram.size(); ++i) {
-      if (i - avg < 0 || i + avg >= histogram.size()) {
+      if (i - windowHalf < 0 || i + windowHalf >= histogram.size()) {
         smoothed.push_back(histogram[i]);
       } else {
         double sum = 0.0;
-        for (ulongint j = i - avg; j <= i + avg; ++j) {
+        for (ulongint j = i - windowHalf; j <= i + windowHalf; ++j) {
           sum += histogram[j];
         }
-        double total = sum / (2 * (int) avg + 1);
+        double total = sum / (2 * (int)windowHalf + 1);
         smoothed.push_back(int(total * 10.0 + 0.5) / 10.0);
       }
     }
