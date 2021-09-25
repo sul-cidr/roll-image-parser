@@ -3719,7 +3719,11 @@ vector<HoleInfo *> sortMusicalHolesByWidth(vector<HoleInfo *> holes){
 // RollImage::getMedianMusicalHoleWidth -- Gets median width of the holes
 //
 
-ulongint RollImage::getLength(ulongint index) const {
+ulongint RollImage::getLength(ulongint index) {
+  if (m_averageHoleWidth != -1) {
+    return m_averageHoleWidth;
+  }
+
   if (groupType == "pruned-mean") {
     return getPrunedMeanMusicalHoleWidth();
   } else if (groupType == "median-space") {
@@ -3738,8 +3742,11 @@ ulongint RollImage::getLength(ulongint index) const {
       return getMedianMusicalHoleWidth();
     }
 
-    for (int i = 1; i < trackerArray[index].size(); ++i) {
-      ulongint distance = trackerArray[index][i] -> origin.first - (trackerArray[index][i - 1] -> origin.first + trackerArray[index][i - 1] -> width.first);
+//    const vector<HoleInfo *> &vec = trackerArray[index];
+    const vector<HoleInfo *> &vec = holes;
+
+    for (int i = 1; i < vec.size(); ++i) {
+      ulongint distance = vec[i] -> origin.first - (vec[i - 1] -> origin.first + vec[i - 1] -> width.first);
       if (distance < histogram.size()) {
         histogram[distance]++;
       }
@@ -3779,11 +3786,11 @@ ulongint RollImage::getLength(ulongint index) const {
 
     if (mins.first.second <= mins.second.second) {
       std::cerr << "  - (Index " << index << ") HOLE GROUPING CUTOFF LENGTH: " << mins.first.first << "px." << std::endl;
-      return mins.first.first;
+      return m_averageHoleWidth = mins.first.first;
     }
 
     std::cerr << "  - (Index " << index << ") HOLE GROUPING CUTOFF LENGTH: " << mins.second.first << "px." << std::endl;
-    return mins.second.first;
+    return m_averageHoleWidth = mins.second.first;
   }
 }
 
@@ -3794,7 +3801,7 @@ ulongint RollImage::getLength(ulongint index) const {
 // RollImage::getMedianMusicalHoleWidth -- Gets median width of the holes
 //
 
-ulongint RollImage::getMedianMusicalHoleWidth() const {
+ulongint RollImage::getMedianMusicalHoleWidth() {
 	if (m_averageHoleWidth != -1) {
 		return m_averageHoleWidth;
 	}
@@ -3805,7 +3812,7 @@ ulongint RollImage::getMedianMusicalHoleWidth() const {
 
 	vector<HoleInfo *> sorted = sortMusicalHolesByWidth(holes);
 
-	return sorted.size() % 2 == 1 ?
+	return m_averageHoleWidth = sorted.size() % 2 == 1 ?
          sorted[sorted.size() / 2] -> width.second :
          (sorted[sorted.size() / 2 - 1] -> width.second + sorted[sorted.size() / 2] -> width.second) / 2;
 }
@@ -3817,7 +3824,7 @@ ulongint RollImage::getMedianMusicalHoleWidth() const {
 // RollImage::getAverageMusicalHoleWidth --
 //
 
-ulongint RollImage::getAverageMusicalHoleWidth() const {
+ulongint RollImage::getAverageMusicalHoleWidth() {
   if (m_averageHoleWidth != -1) {
     return m_averageHoleWidth;
   }
@@ -3828,7 +3835,7 @@ ulongint RollImage::getAverageMusicalHoleWidth() const {
   for (const auto &hole : holes) {
     sum += hole -> width.second;
   }
-  return sum / holes.size();
+  return m_averageHoleWidth = sum / holes.size();
 }
 
 
@@ -3838,7 +3845,7 @@ ulongint RollImage::getAverageMusicalHoleWidth() const {
 // RollImage::getPrunedMeanMusicalHoleWidth --
 //
 
-ulongint RollImage::getPrunedMeanMusicalHoleWidth() const {
+ulongint RollImage::getPrunedMeanMusicalHoleWidth() {
   vector<HoleInfo *> sorted = sortMusicalHolesByWidth(holes);
   ulongint q1 = sorted[sorted.size() / 4] -> width.second;
   ulongint q3 = sorted[3 / 4 * sorted.size()] -> width.second;
@@ -3853,11 +3860,13 @@ ulongint RollImage::getPrunedMeanMusicalHoleWidth() const {
     sum += hole -> width.second;
     total++;
   }
-  return sum / (double)(total);
+
+
+  return m_averageHoleWidth = sum / (double)(total);
 }
 
 
-ulongint RollImage::getMedianCentroidDist(ulongint index) const {
+ulongint RollImage::getMedianCentroidDist(ulongint index) {
   vector<HoleInfo *> hi = trackerArray[index];
   ulongint sum = 0;
 
@@ -3878,7 +3887,7 @@ ulongint RollImage::getMedianCentroidDist(ulongint index) const {
     total++;
   }
 
-  return sum / total;
+  return m_averageHoleWidth = sum / total;
 }
 
 
