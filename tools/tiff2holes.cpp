@@ -72,6 +72,12 @@ int main(int argc, char** argv) {
 		roll.setRollType65Note();
 	} else if (options.getBoolean("88-note")) {
 		roll.setRollType88Note();
+	} else if (options.getBoolean("ampico")) {
+		roll.setRollTypeAmpico();
+	} else if (options.getBoolean("ampico-b")) {
+		roll.setRollTypeAmpicoB();
+	} else if (options.getBoolean("duo-art")) {
+		roll.setRollTypeDuoArt();
 	} else {
 		cerr << "A Roll type is required:" << endl;
 		cerr << "   -r   == for red Welte rolls"   << endl;
@@ -79,6 +85,9 @@ int main(int argc, char** argv) {
 		cerr << "   -l   == for Licensee Welte rolls" << endl;
 		cerr << "   --65 == for 65-note rolls"     << endl;
 		cerr << "   --88 == for 88-note rolls"     << endl;
+		cerr << "   -a   == for Ampico [A] rolls"  << endl;
+		cerr << "   -b   == for Ampico B rolls"    << endl;
+		cerr << "   -d   == for Duo-Art rolls"     << endl;
 		exit(1);
 	}
 
