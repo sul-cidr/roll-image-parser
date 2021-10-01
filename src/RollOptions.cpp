@@ -470,6 +470,7 @@ void RollOptions::setRollTypeLicenseeWelte(void) {
 }
 
 
+
 //////////////////////////////
 //
 // RollOptions::setRollTypeDuoArt -- Apply settings suitable for Aeolian Duo-Art piano rolls.
@@ -480,7 +481,7 @@ void RollOptions::setRollTypeLicenseeWelte(void) {
 //
 // Duo-Art tracker holes:
 //
-//   9 expression/control holes on bass side:
+//   9 expression/control columns on bass side (some empty):
 //       1:  Rewind (wide hole)              MIDI Key 16
 //       2:  Empty (overlaps with rewind)    MIDI Key 17
 //       3:  Soft pedal                      MIDI Key 18
@@ -498,7 +499,7 @@ void RollOptions::setRollTypeLicenseeWelte(void) {
 //       49: E4                              MIDI Key 64
 //       ...
 //       89: G#7                             MIDI Key 104
-//   9 expression holes on the treble side:
+//   9 expression columns on the treble side (some empty):
 //       90: -9:  Treble volume              MIDI Key 105
 //       91: -8:  Treble volume              MIDI Key 106
 //       92: -7:  Treble volume              MIDI Key 107
@@ -535,7 +536,7 @@ void RollOptions::setRollTypeDuoArt(void) {
 }
 
 
-// Ampico register break at E4/F4
+
 //////////////////////////////
 //
 // RollOptions::setRollTypeAmpico -- Apply settings suitable for Ampico (A) piano rolls.
@@ -596,11 +597,13 @@ void RollOptions::setRollTypeAmpico(void) {
 }
 
 
+
 // If tracker positions are the same, there's no need to differentiate between
 // Ampico (A) and B when detecting holes
 void RollOptions::setRollTypeAmpicoB(void) {
 	setRollTypeAmpico();
 }
+
 
 
 //////////////////////////////
