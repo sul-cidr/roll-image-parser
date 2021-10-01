@@ -470,9 +470,139 @@ void RollOptions::setRollTypeLicenseeWelte(void) {
 }
 
 
-// Duo-Art register break at D#4/E4
+//////////////////////////////
+//
+// RollOptions::setRollTypeDuoArt -- Apply settings suitable for Aeolian Duo-Art piano rolls.
+//
+// CAVEAT: These values are highly tentative and experimental.
+// Note that the snakebite holes are somewhat narrower than the other holes,
+// and the rewind hole is wider.
+//
+// Duo-Art tracker holes:
+//
+//   9 expression/control holes on bass side:
+//       1:  Rewind (wide hole)              MIDI Key 16
+//       2:  Empty (overlaps with rewind)    MIDI Key 17
+//       3:  Soft pedal                      MIDI Key 18
+//       4:  Bass theme snakebite            MIDI Key 19
+//       5:  Bass theme snakebite            MIDI Key 20
+//       6:  Bass volume                     MIDI Key 21
+//       7:  Bass volume                     MIDI Key 22
+//       8:  Bass volume                     MIDI Key 23
+//       9:  Bass volume                     MIDI Key 24
+//   Then 80 notes from C#1 to G#7 (MIDI notes 25 to 104)
+//       10: C#1                             MIDI Key 25
+//       ...
+//       48: D#4                             MIDI Key 63
+//    Treble register:
+//       49: E4                              MIDI Key 64
+//       ...
+//       89: G#7                             MIDI Key 104
+//   9 expression holes on the treble side:
+//       90: -9:  Treble volume              MIDI Key 105
+//       91: -8:  Treble volume              MIDI Key 106
+//       92: -7:  Treble volume              MIDI Key 107
+//       93: -6:  Treble volume              MIDI Key 108
+//       94: -5:  Treble theme snakebite     MIDI Key 109
+//       95: -4:  Treble theme snakebite     MIDI Key 110
+//       96: -3:  Blank                      MIDI Key 111
+//       97: -2:  Blank                      MIDI Key 112
+//       98: -1:  Treble                     MIDI Key 113
+//		 
+
+void RollOptions::setRollTypeDuoArt(void) {
+	m_rollType = "duo-art";
+	m_minTrackerSpacingToPaperEdge = 1.6; // check
+	m_rewindHole = 1;
+	m_rewindHoleMidi = 16;
+	m_trackerHoles = 98;
+
+	m_bass_midi = 16;   // first MIDI Note on bass side of paper
+	m_treble_midi = 64; // first MIDI Note on treble side of paper
+
+	m_bassExpressionTrackStartNumberLeft = 1;
+	m_bassExpressionTrackStartMidi = 16;
+	m_bassNotesTrackStartNumberLeft = 10;
+	m_bassNotesTrackStartMidi = 25;
+
+	m_trebleNotesTrackStartNumberLeft = 49;
+	m_trebleNotesTrackStartMidi = 64;
+
+	m_trebleExpressionTrackStartNumberLeft = 90;
+	m_trebleExpressionTrackStartMidi = 105;
+
+	hasExpressionMidiFileSetup();
+}
+
 
 // Ampico register break at E4/F4
+//////////////////////////////
+//
+// RollOptions::setRollTypeAmpico -- Apply settings suitable for Ampico (A) piano rolls.
+//
+// CAVEAT: These values are highly tentative and experimental.
+//
+// Ampico A tracker holes:
+//
+//   9 expression/control holes on bass side:
+//       1:  Rewind (wide hole)              MIDI Key 16
+//       2:  Empty (overlaps with rewind)    MIDI Key 17
+//       3:  Soft pedal                      MIDI Key 18
+//       4:  Bass theme snakebite            MIDI Key 19
+//       5:  Bass theme snakebite            MIDI Key 20
+//       6:  Bass volume                     MIDI Key 21
+//       7:  Bass volume                     MIDI Key 22
+//       8:  Bass volume                     MIDI Key 23
+//       9:  Bass volume                     MIDI Key 24
+//   Then 80 notes from C#1 to G#7 (MIDI notes 25 to 104)
+//       10: C#1                             MIDI Key 25
+//       ...
+//       48: D#4                             MIDI Key 63
+//    Treble register:
+//       49: E4                              MIDI Key 64
+//       ...
+//       89: G#7                             MIDI Key 104
+//   9 expression holes on the treble side:
+//       90: -9:  Treble volume              MIDI Key 105
+//       91: -8:  Treble volume              MIDI Key 106
+//       92: -7:  Treble volume              MIDI Key 107
+//       93: -6:  Treble volume              MIDI Key 108
+//       94: -5:  Treble theme snakebite     MIDI Key 109
+//       95: -4:  Treble theme snakebite     MIDI Key 110
+//       96: -3:  Blank                      MIDI Key 111
+//       97: -2:  Blank                      MIDI Key 112
+//       98: -1:  Treble                     MIDI Key 113
+//		 
+
+void RollOptions::setRollTypeAmpico(void) {
+	m_rollType = "ampico";
+	m_minTrackerSpacingToPaperEdge = 1.6; // check
+	m_rewindHole = 1;
+	m_rewindHoleMidi = 16;
+	m_trackerHoles = 98;
+
+	m_bass_midi = 25;   // first MIDI Note on bass side of paper
+	m_treble_midi = 64; // first MIDI Note on treble side of paper
+
+	m_bassExpressionTrackStartNumberLeft = 1;
+	m_bassExpressionTrackStartMidi = 16;
+	m_bassNotesTrackStartNumberLeft = 10;
+	m_bassNotesTrackStartMidi = 25;
+
+	m_trebleNotesTrackStartNumberLeft = 49;
+	m_trebleNotesTrackStartMidi = 64;
+
+	m_trebleExpressionTrackStartNumberLeft = 90;
+	m_trebleExpressionTrackStartMidi = 105;
+
+	hasExpressionMidiFileSetup();
+}
+
+
+void RollOptions::setRollTypeAmpicoB(void) {
+		m_rollType = "ampico-b";
+}
+
 
 //////////////////////////////
 //
