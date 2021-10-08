@@ -526,9 +526,9 @@ void RollOptions::setRollType65Note(void) {
 //       1        15      unused
 //       2        16      unused, sometimes rewind hole
 //       3        17      unused
-//       4        18      sustain pedal
-//       5        19      unused
-//       6        20      unused
+//       4        18      Sustain pedal
+//       5        19      Bass snakebite accent
+//       6        20      Bass snakebite accent
 //       7        21      A0
 //       ...
 //       50       64      E4  Pretend Bass register
@@ -536,8 +536,8 @@ void RollOptions::setRollType65Note(void) {
 //       51       65      F4  Pretend Treble register
 //       ...
 //       94      108      C7
-//       95      109      unused
-//       96      110      unused
+//       95      109      Treble snakebite accent
+//       96      110      Treble snakebite accent
 //       97      111      unused
 //       98      112      unused
 //       99      113      unused
@@ -568,13 +568,13 @@ void RollOptions::setRollType88Note(void) {
 	m_bassNotesTrackStartNumberLeft = 7;
 	m_bassNotesTrackStartMidi = 21;
 
-	// treble expression (not used)
+	// treble expression (not really used except for snakebite accents)
 	m_trebleNotesTrackStartNumberLeft = 51;
 	m_trebleNotesTrackStartMidi = 65;
 	m_trebleExpressionTrackStartNumberLeft = 95;
 	m_trebleExpressionTrackStartMidi = 109;
 
-	hasNoExpressionMidiFileSetup();
+	hasExpressionMidiFileSetup();
 }
 
 
