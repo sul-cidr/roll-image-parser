@@ -487,10 +487,10 @@ void RollOptions::setRollTypeLicenseeWelte(void) {
 //       3:  Soft pedal                      MIDI Key 18
 //       4:  Bass theme snakebite            MIDI Key 19
 //       5:  Bass theme snakebite            MIDI Key 20
-//       6:  Bass volume                     MIDI Key 21
-//       7:  Bass volume                     MIDI Key 22
-//       8:  Bass volume                     MIDI Key 23
-//       9:  Bass volume                     MIDI Key 24
+//       6:  Bass volume 1                   MIDI Key 21
+//       7:  Bass volume 2                   MIDI Key 22
+//       8:  Bass volume 4                   MIDI Key 23
+//       9:  Bass volume 8                   MIDI Key 24
 //   Then 80 notes from C#1 to G#7 (MIDI notes 25 to 104)
 //       10: C#1                             MIDI Key 25
 //       ...
@@ -500,15 +500,15 @@ void RollOptions::setRollTypeLicenseeWelte(void) {
 //       ...
 //       89: G#7                             MIDI Key 104
 //   9 expression columns on the treble side (some empty):
-//       90: -9:  Treble volume              MIDI Key 105
-//       91: -8:  Treble volume              MIDI Key 106
-//       92: -7:  Treble volume              MIDI Key 107
-//       93: -6:  Treble volume              MIDI Key 108
+//       90: -9:  Treble volume 8            MIDI Key 105
+//       91: -8:  Treble volume 4            MIDI Key 106
+//       92: -7:  Treble volume 2            MIDI Key 107
+//       93: -6:  Treble volume 1            MIDI Key 108
 //       94: -5:  Treble theme snakebite     MIDI Key 109
 //       95: -4:  Treble theme snakebite     MIDI Key 110
 //       96: -3:  Blank                      MIDI Key 111
 //       97: -2:  Blank                      MIDI Key 112
-//       98: -1:  Sustain pedal              MIDI Key 113
+//       98: -1:  Sustain         pedal      MIDI Key 113
 //		 
 
 void RollOptions::setRollTypeDuoArt(void) {
@@ -546,13 +546,13 @@ void RollOptions::setRollTypeDuoArt(void) {
 // Ampico (A) tracker holes:
 //
 //   7 expression holes on the bass side:
-//       1:  Bass                            MIDI Key 16
-//       2:  Bass                            MIDI Key 17
+//       1:  Bass slow cresc                 MIDI Key 16
+//       2:  Bass intensity 2                MIDI Key 17
 //       3:  Soft pedal                      MIDI Key 18
-//       4:  Bass                            MIDI Key 19
-//       5:  Bass                            MIDI Key 20
-//       6:  Bass                            MIDI Key 21
-//       7:  Bass                            MIDI Key 22
+//       4:  Bass intensity 4                MIDI Key 19
+//       5:  Bass fast cresc                 MIDI Key 20
+//       6:  Bass intensity 6                MIDI Key 21
+//       7:  Bass intensity cancel           MIDI Key 22
 //   Then 83 notes from B0 to A7 (MIDI notes 23 to 105)
 //       8:  B0                              MIDI Key 23
 //       ...
@@ -563,13 +563,13 @@ void RollOptions::setRollTypeDuoArt(void) {
 //       90: A7                              MIDI Key 105
 //   8 expression/control holes on the treble side:
 //       91: -8:  Rewind                     MIDI Key 106
-//       92: -7:  Treble                     MIDI Key 107
-//       93: -6:  Treble                     MIDI Key 108
-//       94: -5:  Treble                     MIDI Key 109
-//       95: -4:  Treble                     MIDI Key 110
+//       92: -7:  Treble intensity cancel    MIDI Key 107
+//       93: -6:  Treble intensity 6         MIDI Key 108
+//       94: -5:  Treble fast cresc          MIDI Key 109
+//       95: -4:  Treble intensity 4         MIDI Key 110
 //       96: -3:  Sustain pedal              MIDI Key 111
-//       97: -2:  Treble                     MIDI Key 112
-//       98: -1:  Treble                     MIDI Key 113
+//       97: -2:  Treble intensity 2         MIDI Key 112
+//       98: -1:  Treble slow cresc          MIDI Key 113
 //		 
 
 void RollOptions::setRollTypeAmpico(void) {
@@ -598,10 +598,65 @@ void RollOptions::setRollTypeAmpico(void) {
 
 
 
-// If tracker positions are the same, there's no need to differentiate between
-// Ampico (A) and B when detecting holes
+//////////////////////////////
+//
+// RollOptions::setRollTypeAmpicoB -- Apply settings suitable for Ampico (B) piano rolls.
+//
+// CAVEAT: These values are highly tentative and experimental.
+//
+// Ampico (B) tracker holes:
+//
+//   8 expression holes on the bass side:
+//       1:  Amplifier trigger (B only)      MIDI Key 15
+//       2:  Unused (A only)                 MIDI Key 16
+//       3:  Bass intensity 2                MIDI Key 17
+//       4:  Soft pedal                      MIDI Key 18
+//       5:  Bass intensity 4                MIDI Key 19
+//       6:  Unused (A only)                 MIDI Key 20
+//       7:  Bass intensity 6                MIDI Key 21
+//       8:  Bass intensity cancel           MIDI Key 22
+//   Then 83 notes from B0 to A7 (MIDI notes 23 to 105)
+//       9:  B0                              MIDI Key 23
+//       ...
+//       50: E4                              MIDI Key 64
+//    Treble register:
+//       51: F4                              MIDI Key 65
+//       ...
+//       91: A7                              MIDI Key 105
+//   9 expression/control holes on the treble side:
+//       92: -9:  Rewind                     MIDI Key 106
+//       93: -8:  Treble intensity cancel    MIDI Key 107
+//       94: -7:  Treble intensity 6         MIDI Key 108
+//       95: -6:  Treble fast cresc          MIDI Key 109
+//       96: -5:  Treble intensity 4         MIDI Key 110
+//       97: -4:  Sustain pedal              MIDI Key 111
+//       98: -3:  Treble intensity 2         MIDI Key 112
+//       99: -2:  Treble slow cresc          MIDI Key 113
+//      100: -1:  Sub intensity (B only)     MIDI Key 114
+//
+
 void RollOptions::setRollTypeAmpicoB(void) {
-	setRollTypeAmpico();
+	m_rollType = "ampico_b";
+	m_minTrackerSpacingToPaperEdge = 1.6; // check
+	m_rewindHole = 92; // Beware of post-rewind patterns on recut rolls
+	m_rewindHoleMidi = 106;
+	m_trackerHoles = 100;
+
+	m_bass_midi = 15;   // first MIDI Note on bass side of paper
+	m_treble_midi = 65; // first MIDI Note on treble side of paper
+
+	m_bassExpressionTrackStartNumberLeft = 1;
+	m_bassExpressionTrackStartMidi = 15;
+	m_bassNotesTrackStartNumberLeft = 9;
+	m_bassNotesTrackStartMidi = 23;
+
+	m_trebleNotesTrackStartNumberLeft = 51;
+	m_trebleNotesTrackStartMidi = 65;
+
+	m_trebleExpressionTrackStartNumberLeft = 92;
+	m_trebleExpressionTrackStartMidi = 106;
+
+	hasExpressionMidiFileSetup();
 }
 
 
