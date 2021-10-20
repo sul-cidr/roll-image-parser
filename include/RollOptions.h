@@ -159,12 +159,8 @@ class RollOptions {
 		// m_threshold: brightness threshold (0-255) for separation of paper and non-paper.
 		int m_threshold        = 249;
 
-		// roll acceleration emulation, in feet per minute per minute. Values
-		// used are based on aggregateed observations of sound and MIDI
-		// recordings of rolls being played on replica hardware, with note
-		// events aligned with distance measurements from scanned roll images.
-		// Default value is for red Welte rolls
-		double m_rollAcceleration = .3147;
+		// roll acceleration emulation, in feet per minute per minute.
+		double m_rollAcceleration = 0.0;
 
 };
 
