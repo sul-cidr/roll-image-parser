@@ -588,6 +588,11 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		}
 	}
 
+	for (int i=0; i<(int)midiToTrackMapping.size(); i++) {
+		if (midiToTrackMapping[i] > 0) {
+			midiToTrackMapping[i] += shifting;
+		}
+	}
 }
 
 
@@ -4340,8 +4345,11 @@ void RollImage::generateHoleMidifile(MidiFile& midifile) {
 //////////////////////////////
 //
 // RollImage::setMidiFileTempo -- Set the tempo according to the 
-//    roll type.  This often requires metadata input, so it can be changed later.
-//
+//    roll type. This often requires metadata input, so it can be changed later.
+//    Also set the acceleration rate for the roll type, if known. Values
+//    used are based on aggregated observations of sound and MIDI
+//    recordings of rolls being played on replica hardware, with note
+//    events aligned with distance measurements from scanned roll images.
 
 void RollImage::setMidiFileTempo(MidiFile& midifile) {
 	if (m_rollType == "welte-red") {
@@ -4349,10 +4357,11 @@ void RollImage::setMidiFileTempo(MidiFile& midifile) {
 		// 591 is for Red Welte tempo of 98.5 (~3 meters/minute)
 		// 568 is the currently preferred value, however.
 		midifile.setTPQ(568);
+		setRollAcceleration(.30865);
 	} else if (m_rollType == "welte-green") {
 		// Peter Phillips's dissertation describes the speed for green Welte
 		// rolls as "seven feet per minute" (p. 121). 7ft/min = 2.1336m/min =
-		// tempo of 70.0532 (* 6 = 420)
+		// tempo of 70.0532 (* 6 = 420).
 		midifile.setTPQ(420);
 		setRollAcceleration(.22336);
 	} else if (m_rollType == "88-note") {
