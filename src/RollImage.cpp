@@ -582,7 +582,7 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 	for (int i=0; i<(int)trackerArray.size(); i++) {
 		for (int j=0; j<(int)trackerArray[i].size(); j++) {
 			if (trackerArray[i][j]->midikey >= 0) {
-				trackerArray[i][j]->midikey += shifting;
+				trackerArray[i][j]->midikey -= shifting;
 			}
 			trackerArray[i][j]->track += shifting;
 		}
