@@ -4594,6 +4594,8 @@ std::ostream& RollImage::printQualityReport(std::ostream& out) {
 		analyzeLeaders();
 	}
 
+	out << "@@BEGIN: QUALITYREPORT\n";
+
 	if (shifts.size() >= 20) {
 		out << "Error: Too many shifts (" << shifts.size() << ")."
 		    << " Maximum allowed is 19." << endl;
@@ -4611,6 +4613,8 @@ std::ostream& RollImage::printQualityReport(std::ostream& out) {
 		out << "Error: margins are too dusty (" << dustscore << ")"
 		    << " Maximum allowed is 1000 ppm." << endl;
 	}
+
+	out << "@@END: QUALITYREPORT\n\n";
 
 	return out;
 }

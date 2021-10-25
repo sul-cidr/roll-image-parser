@@ -93,6 +93,7 @@ int main(int argc, char** argv) {
 	roll.loadGreenChannel(threshold);
 	roll.analyze();
 	roll.printRollImageProperties();
+	roll.printQualityReport();
 
 	return 0;
 }
