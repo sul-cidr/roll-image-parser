@@ -4383,21 +4383,29 @@ void RollImage::setMidiFileTempo(MidiFile& midifile) {
 		// TPQ is 6 times the tempo at 300 DPI, (so 591 = 6 * 98.5)
 		// 591 is for Red Welte tempo of 98.5 (~3 meters/minute)
 		// 568 is the currently preferred value, however.
+		// Wayne Stahnke uses 47.2 mm/s (1.858 in/s) = 557.4 TPQ
 		midifile.setTPQ(568);
 		setRollAcceleration(.30865);
 	} else if (m_rollType == "welte-green") {
 		// Peter Phillips's dissertation describes the speed for green Welte
-		// rolls as "seven feet per minute" (p. 121). 7ft/min = 2.1336m/min =
+		// rolls as "seven feet per minute" (p. 121). 7 ft/min = 2.1336 m/min =
 		// tempo of 70.0532 (* 6 = 420).
 		midifile.setTPQ(420);
-		setRollAcceleration(.22336);
+		setRollAcceleration(.16896);
+	} else if (m_rollType == "welte-licensee") {
+		// This is equivalent to the median speed of "eight feet per minute"
+		// that Peter Phillips mentions for the De Luxe Welte Licensee rolls 
+		// (p. 126): 8 ft/min = 2.438 m/min = tempo of 80.0608.
+		// Wayne Stahnke suggests a speed of 1.7 in/s = 8.5 ft/min = 510 TPQ
+		midifile.setTPQ(6 * 80);
+		// XXX Acceleration has not been modeled/observed. Wayne Stahnke
+		// projects that the effective spool diameter for Licensee is ~90.9%
+		// of the Green spool, so assuming this translates to acceleration:
+		setRollAcceleration(.16896 * 0.909);
 	} else if (m_rollType == "88-note") {
 		midifile.setTPQ(6 * 60); 
 	} else {
 		// set to a neutral guess tempo of 80 for now if unknown, this can be adjusted later.
-		// Note that this is equivalent to the median speed of "eight feet per
-		// minute" that Peter Phillips mentions for the De Luxe Welte Licensee
-		// rolls (p. 126): 8ft/min = 2.4384m/min = tempo of 80.0608
 		midifile.setTPQ(6 * 80); 
 	}
 }
