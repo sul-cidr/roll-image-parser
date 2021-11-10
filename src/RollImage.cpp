@@ -64,7 +64,8 @@ void RollImage::clear(void) {
 	m_dustscorebass             = -1.0;
 	m_dustscoretreble           = -1.0;
 	m_averageHoleWidth          = -1.0;
-	m_isMonochrome              = false; 
+	m_isMonochrome              = false;
+	m_useRewindHoleCorrection   = true;
 }
 
 
@@ -124,6 +125,16 @@ string RollImage::my_to_string(int value) {
 //
 void RollImage::setMonochrome(bool value) {
 	m_isMonochrome = value;
+}
+
+
+
+//////////////////////////////
+//
+// RollImage::setRewindCorrection
+//
+void RollImage::setRewindCorrection(bool value) {
+	m_useRewindHoleCorrection = value;
 }
 
 
@@ -491,8 +502,9 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 	}
 
 	int rewindholemidi = getRewindHoleMidi();
-	if (!rewindholemidi) {
-		// don't know what type of piano roll or there is no rewind hole, so do
+	if (!rewindholemidi || !m_useRewindHoleCorrection) {
+		// don't know what type of piano roll or there is no rewind hole, or
+		// cmd line specifies not to trust the rewind hole location, so do
 		// not try to make a correction for the expected rewind hole location.
 		return;
 	}
@@ -564,18 +576,34 @@ void RollImage::assignMidiKeyNumbersToHoles(void) {
 		return;
 	}
 
-	int shifting = rewindholemidi - midiKey[bestFitIndex];
+	// this is the difference between the MIDI number currently assigned to the
+	// detected rewind hole's tracker column and the MIDI number that the
+	// rewind hole's tracker column should have for this roll type,
+	// assuming that the detected rewind hole truly is the rewind hole
+	int shifting = midiKey[bestFitIndex] - rewindholemidi;
 	cerr << "SHIFTING HOLE ASSIGNMENTS BY " << shifting << " FOR REWIND HOLE ALIGNMENT" << endl;
 
 	for (int i=0; i<(int)trackerArray.size(); i++) {
 		for (int j=0; j<(int)trackerArray[i].size(); j++) {
+			// adjust the MIDI number of every hole in every column by the
+			// discrepancy between the observed and expected MIDI number of the
+			// rewind hole. Holes in tracker columns with midikey < 0 have
+			// already been marked as invalid and won't be affected.
 			if (trackerArray[i][j]->midikey >= 0) {
-				trackerArray[i][j]->midikey += shifting;
+				trackerArray[i][j]->midikey -= shifting;
 			}
+			// each hole's tracker column number is adjusted in the opposite
+			// direction as the MIDI number, to keep it in sync with the
+			// midiToTrackMapping (see below)
 			trackerArray[i][j]->track += shifting;
 		}
 	}
 
+	// adjust the tracker column mapping for each MIDI number by the observed
+	// discrepancy between the current and expected MIDI number of the rewind
+	// hole. This keeps midiToTrackMapping in sync with the adjusted MIDI
+	// number mappings for the holes (above), and is made in the opposite
+	// direction for this reason.
 	for (int i=0; i<(int)midiToTrackMapping.size(); i++) {
 		if (midiToTrackMapping[i] > 0) {
 			midiToTrackMapping[i] += shifting;
