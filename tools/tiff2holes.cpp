@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 1) {
-		cerr << "Usage: tiff2holes [-rgl58tm] file.tiff > analysis.txt" << endl;
+		cerr << "Usage: tiff2holes [-rgl58tmse] file.tiff > analysis.txt" << endl;
 		cerr << "file.tiff must be a 24-bit color image, uncompressed" << endl;
 		cerr << "unless -m is supplied; then file.tiff must be a monochrome" << endl;
 		cerr << "(8-bit, single-channel) image, uncompressed" << endl;
