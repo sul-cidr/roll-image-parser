@@ -475,7 +475,6 @@ void RollOptions::setRollTypeLicenseeWelte(void) {
 //
 // RollOptions::setRollTypeDuoArt -- Apply settings suitable for Aeolian Duo-Art piano rolls.
 //
-// CAVEAT: These values are highly tentative and experimental.
 // Note that the snakebite holes are somewhat narrower than the other holes,
 // and the rewind hole is wider.
 //
@@ -541,8 +540,6 @@ void RollOptions::setRollTypeDuoArt(void) {
 //
 // RollOptions::setRollTypeAmpico -- Apply settings suitable for Ampico (A) piano rolls.
 //
-// CAVEAT: These values are highly tentative and experimental.
-//
 // Ampico (A) tracker holes:
 //
 //   7 expression holes on the bass side:
@@ -601,8 +598,6 @@ void RollOptions::setRollTypeAmpico(void) {
 //////////////////////////////
 //
 // RollOptions::setRollTypeAmpicoB -- Apply settings suitable for Ampico (B) piano rolls.
-//
-// CAVEAT: These values are highly tentative and experimental.
 //
 // Ampico (B) tracker holes:
 //
