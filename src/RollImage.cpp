@@ -66,6 +66,7 @@ void RollImage::clear(void) {
 	m_averageHoleWidth          = -1.0;
 	m_isMonochrome              = false;
 	m_useRewindHoleCorrection   = true;
+	m_emulateAcceleration       = false;
 }
 
 
@@ -135,6 +136,16 @@ void RollImage::setMonochrome(bool value) {
 //
 void RollImage::setRewindCorrection(bool value) {
 	m_useRewindHoleCorrection = value;
+}
+
+
+
+//////////////////////////////
+//
+// RollImage::toggleAccelerationEmulation
+//
+void RollImage::toggleAccelerationEmulation(bool value) {
+	m_emulateAcceleration = value;
 }
 
 
@@ -4568,6 +4579,12 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 		}
 	}
 
+	if (!m_emulateAcceleration) {
+		midifile.addTempo(0, 0, 60);
+		midifile.sortTracks();
+		return;
+	}
+
 	// Add acceleration emulation:
 	// Initial tempo is ticks per beat * 60bpm (in ticks per minute)
 	// Calculate initial velocity in feet per minute by dividing the initial 
@@ -4995,8 +5012,9 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@@ \t\t\taround the hole.\n";
 	out << "@@ ORIGIN_COL:\t\tThe pixel column of the leading edge of the bounding box around" << std::endl;
 	out << "@@ \t\t\tthe hole, bass side.\n";
-	out << "@@ WIDTH_ROW:\t\tThe pixel length of the bounding box around the hole.\n";
-	out << "@@ WIDTH_COL:\t\tThe pixel column of the leading edge of the hole, bass side.\n";
+	out << "@@ WIDTH_ROW:\t\\Length in pixels from the leading row of the hole's bounding box" << std::endl;
+	out << "@@ \t\t\tto the trailing edge's row.\n";
+	out << "@@ WIDTH_COL:\t\tWidth in pixels from the bass-side to the treble-side edge of the hole.\n";
 	out << "@@ CENTROID_ROW:\tThe center of mass row of the hole.\n";
 	out << "@@ CENTROID_COL:\tThe center of mass column of the hole.\n";
 	out << "@@ AREA:\t\tThe area of the hole (in pixels).\n";
