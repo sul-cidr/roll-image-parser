@@ -37,9 +37,9 @@ int main(int argc, char** argv) {
 	options.define("r|red|red-welte|welte-red=b", "Assume Red-Welte (T-100) piano roll");
 	options.define("g|green|green-welte|welte-green=b", "Assume Green-Welte (T-98) piano roll");
 	options.define("l|licensee|licensee-welte|welte-licensee=b", "Assume Licensee piano roll");
-	options.define("a|ampico=b", "Assume Ampico [A] piano roll (option not active yet)");
-	options.define("b|ampico-b=b", "Assume Ampico B piano roll (option not active yet)");
-	options.define("d|duo-art=b", "Assume Aeolean Duo-Art piano roll (option not active yet)");
+	options.define("a|ampico=b", "Assume Ampico [A] piano roll (EXPERIMENTAL)");
+	options.define("b|ampico-b=b", "Assume Ampico B piano roll (EXPERIMENTAL)");
+	options.define("d|duo-art=b", "Assume Aeolean Duo-Art piano roll (EXPERIMENTAL)");
 	options.define("5|65|65-note|65-hole=b", "Assume 65-note roll");
 	options.define("8|88|88-note|88-hole=b", "Assume 88-note roll");
 	options.define("t|threshold=i:249", "Brightness threshold for hole/paper separation");
