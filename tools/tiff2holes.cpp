@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 	options.define("m|monochrome=b", "Input image is a monochrome (single-channel) TIFF");
 	options.define("s|disregard-rewind-hole=b", "Skip rewind hole correction for tracker->MIDI mapping");
 	options.define("e|emulate-roll-acceleration=b", "Add tempo events to note MIDI for acceleration");
-	options.define("a|alignment-shift=i:0", "Shift leftmost valid position for tracker->MIDI mapping");
+	options.define("i|alignment-shift=i:0", "Shift leftmost valid position for tracker->MIDI mapping");
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 1) {
