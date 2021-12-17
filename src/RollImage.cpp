@@ -1314,7 +1314,7 @@ void RollImage::storeCorrectedCentroidHistogram(void) {
 
 void RollImage::analyzeTrackerBarSpacing(void) {
 
-	// XXX These values aren't used anywhere???
+	// XXX These values aren't used anywhere
 	ulongint leftside  = getHardMarginLeftIndex();
 	ulongint rightside = getHardMarginRightIndex();
 	ulongint width     = rightside - leftside;
@@ -1331,12 +1331,6 @@ void RollImage::analyzeTrackerBarSpacing(void) {
 	for (ulongint i=4096; i<input.size(); i++) {
 		input.at(i) = 0.0;
 	}
-
-	// cout << "@@BEGIN CENTROID HISTOGRAM\n";
-	// for (ulongint i=0; i<correctedCentroidHistogram.size(); i++) {
-    //     cout << i << " " << correctedCentroidHistogram.at(i) << "\n";
-	// }
-	// cout << "@@END CENTROID HISTOGRAM\n\n";
 
 #ifndef DONOTUSEFFT
 
@@ -1357,9 +1351,8 @@ void RollImage::analyzeTrackerBarSpacing(void) {
 		}
 	}
 
-	//cout << "@@BEGIN TRACKER SPACING HISTOGRAM" << "\n";
-
-	// Max image width is 4096 pixels; can't expect fewer than 65 tracker holes (4096/64 = 64)
+	// Max image width is 4096 pixels; can't expect fewer than 65 tracker holes
+	// (4096/64 = 64)
 	int maxDistance = 64;
 	vector<double> distanceMagnitudes(maxDistance * 100);
 	distanceMagnitudes.at(0) = 0;
@@ -1368,14 +1361,17 @@ void RollImage::analyzeTrackerBarSpacing(void) {
 		ulongint magIndex = ulongint(4096.0 * factor / f);
 		if (magIndex >= magnitudeSpectrum.size()) {
 			distanceMagnitudes.at(int(f * 100)) = 0;
-			//cout << f << " 0\n";
 			continue;
 		}
 		distanceMagnitudes.at(int(f * 100.0)) = magnitudeSpectrum.at(magIndex);
-		//cout << f << " " << magnitudeSpectrum.at(magIndex) << "\n";
 	}
-	//cout << "@@END TRACKER SPACING HISTOGRAM" << "\n\n";
 
+	// Smooth the frequency magnitude values for inter-column distances. In
+	// rare cases, there can be a narrow spike on a multiple of the true
+	// fundamental frequency (which tends to have a broader peak) that exceeds
+	// the fundamental's magnitude. Applying a simple sliding-window smoothing
+	// process serves to flatten out these spurious spikes, and also replaces
+	// the peak-averaging code that is commented out below.
 	vector<double> smoothedDistanceMagnitudes(distanceMagnitudes.size());
 	int windowLength = 16;
 	int maxsmoothi = 0;
@@ -1395,22 +1391,14 @@ void RollImage::analyzeTrackerBarSpacing(void) {
 		}
 	}
 
-	// double y1 = smoothedSpectrum.at(maxmagi-1);
-	// double y2 = smoothedSpectrum.at(maxmagi);
-	// double y3 = smoothedSpectrum.at(maxmagi+1);
-
-	// cerr << "MAX MAGNITUDE -1: " << y1 << " at index " << maxmagi-1 << "\n";
-	// cerr << "MAX MAGNITUDE: " << y2 << " at index " << maxmagi << "\n";
-	// cerr << "MAX MAGNITUDE +1: " << y3 << " at index " << maxmagi+1 << "\n";
+	// double y1 = magnitudeSpectrum.at(maxmagi-1);
+	// double y2 = magnitudeSpectrum.at(maxmagi);
+	// double y3 = magnitudeSpectrum.at(maxmagi+1);
 
 	// double estimate = 4096.0 * factor / maxmagi;
 	// double b = (y3 - y2)/2.0;
 	// double a = y1/2.0 - y2 + y3/2.0;
 	// double newi = -b / 2 / a / factor ;
-
-	// cerr << "PIXEL SEPARATION: " << estimate << " pixels\n";
-	// cerr << "REFINED PIXEL SEPARATION: " << newi << " pixels\n";
-	// cerr << "FINAL ANSWER: " << (estimate + newi) << " pixels\n";
 
 	// holeSeparation = estimate + newi;
 
@@ -1421,11 +1409,6 @@ void RollImage::analyzeTrackerBarSpacing(void) {
 	// holeSeparation = 33.3772;    // for 9 holes/inch
 #endif /* DONOTUSEFFT */
 
-	// cerr << "\n\nspectrum:\n";
-	// for (ulongint i=0; i<spectrum.size(); i++) {
-	// 	//cerr << spectrum[i].first << "\t" << spectrum[i].second << endl;
-	// 	cerr << spectrum[i] << endl;
-	// }
 }
 
 
