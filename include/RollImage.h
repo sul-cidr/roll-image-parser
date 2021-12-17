@@ -142,6 +142,7 @@ class RollImage : public TiffFile, public RollOptions {
 		void            generateNoteMidiFileBinasc    (ostream& output);
 		void            generateHoleMidiFileHex       (ostream& output);
 		void            generateHoleMidiFileBinasc    (ostream& output);
+		void			setAlignmentShift			  (int trackerShift);
 
 #ifndef DONOTUSEFFT
 		void            generateMidifile              (MidiFile& midifile);
@@ -345,6 +346,11 @@ class RollImage : public TiffFile, public RollOptions {
 		bool       m_isMonochrome;
 		bool       m_useRewindHoleCorrection;
 		bool       m_emulateAcceleration;
+		// m_trackerMapShift -- the leftmost potential tracker bar column
+		// considered to be a legitimate hole column for the roll type is
+		// calculated by analyzeMidiKeyMapping() but can be modified via this
+		// value, which is set from the command line.
+		int        m_trackerMapShift = 0;
 
 #ifndef DONOTUSEFFT
 		std::chrono::system_clock::time_point start_time;
