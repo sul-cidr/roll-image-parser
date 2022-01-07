@@ -396,19 +396,29 @@ return; // disabling for now
 
 
 
+//////////////////////////////
+//
+// RollImage::getInterHoleCutoff -- build a histogram of the distances in
+//   pixels between the end of each perforation and the start of the next in
+//   each tracker column. Smooth the histogram, then choose the distance with
+//   the smallest number items in its histogram bin that is within the average
+//   perforation width for the roll +/- the avg perforation width and assign
+//   this value (in pixels) to m_interHoleCutoff. The value can then be used in
+//   RollImage::groupHoles().
+//
+
 void RollImage::getInterHoleCutoff(void) {
 
 	int  minlen = 0;	     // minimum pixel distance to track
 	int  maxlen = 99;	     // maximum pixel distance to track
-	int  winlen = 6;         // half of sliding window -1 (in pixels) for smoothing histogram
+	int  winlen = 6;         // half of sliding window-1 (in pixels) for smoothing histogram
 	double searchlen = 0.5;  // proportion of avg music hole diameter to search histogram (+/-)
 
 	vector<int> histogram(maxlen - minlen + 1, 0);
 
 	double avglen = getAverageMusicalHoleWidth();
 
-	cerr << "AVG HOLE DIAMETER " << avglen << endl;
-
+    // Build the inter-perforation distance histogram
 	for (ulongint trackerIndex=0; trackerIndex<trackerArray.size(); trackerIndex++) {
 		vector<HoleInfo*>& hi = trackerArray[trackerIndex];
 
@@ -431,14 +441,13 @@ void RollImage::getInterHoleCutoff(void) {
 		}
 	}
 
-	// Default to the inter-hole distance equal to the average hole diameter
+	// Default to an inter-hole distance equal to the average hole diameter
 	double smallestValInWindow = -1;
 	double smallestBinInWindow = int(avglen);
 
-	cerr << "SIZE OF HISTOGRAM " << histogram.size() << endl;
-
+    // Smooth the histogram and keep track of the best candidate for the inter-
+	// hole distance seen so far
 	for (int i=0; i<(int)histogram.size(); i++) {
-		cerr << (i+minlen) << "\t" << histogram[i];
 		if ((i - winlen >= 0) && (i + winlen < (int)histogram.size())) {
 			double sum = 0;
 			for (int j = i - winlen; j <= i + winlen; j++) {
@@ -454,15 +463,10 @@ void RollImage::getInterHoleCutoff(void) {
 					smallestBinInWindow = i + minlen;
 				}
 			}
-			cerr << "\t" << total;
 		}
-		cerr << endl;
 	}
 
 	m_interHoleCutoff = (double) smallestBinInWindow;
-
-	cerr << "INTER HOLE CUTOFF VALUE (INSTANCES): " << smallestValInWindow << endl;
-	cerr << "INTER HOLE CUTOFF BIN (PIXELS): " << m_interHoleCutoff << endl;
 
 }
 
@@ -484,7 +488,6 @@ void RollImage::getInterHoleCutoff(void) {
 //
 
 void RollImage::groupHoles(void) {
-	cerr << "COMPUTING INTER HOLE CUTOFF" << endl;
 	getInterHoleCutoff();
 	for (ulongint i=0; i<trackerArray.size(); i++) {
 		groupHoles(i);
@@ -494,9 +497,9 @@ void RollImage::groupHoles(void) {
 
 void RollImage::groupHoles(ulongint index) {
 	vector<HoleInfo*>& hi = trackerArray[index];
-	//double scalefactor = getBridgeFactor();
-	double length = m_interHoleCutoff;
+	//double scalefactor = getBridgeFactor(); // This doesn't work very well
 	//double length = getAverageMusicalHoleWidth() * scalefactor;
+	double length = m_interHoleCutoff;
 	if (hi.empty()) {
 		return;
 	}
@@ -519,7 +522,6 @@ void RollImage::groupHoles(ulongint index) {
 			lastattack = hi[i];
 		}
 	}
-
 }
 
 
