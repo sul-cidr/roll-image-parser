@@ -291,6 +291,7 @@ class RollImage : public TiffFile, public RollOptions {
 		void       addDriftInfoToHoles         (void);
 		void       groupHoles                  (void);
 		void       groupHoles                  (ulongint index);
+		void       getInterHoleCutoff          (void);
 		void       describeTears               (void);
 		ulongint   processTearLeft             (ulongint startrow, ulongint startcol);
 		ulongint   processTearRight            (ulongint startrow, ulongint startcol);
@@ -342,6 +343,7 @@ class RollImage : public TiffFile, public RollOptions {
 		double     m_dustscorebass;
 		double     m_dustscoretreble;
 		double     m_averageHoleWidth;
+		double     m_interHoleCutoff;
 		bool       m_isMonochrome;
 		bool       m_useRewindHoleCorrection;
 		bool       m_emulateAcceleration;
