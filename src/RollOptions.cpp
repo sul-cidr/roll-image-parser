@@ -470,9 +470,191 @@ void RollOptions::setRollTypeLicenseeWelte(void) {
 }
 
 
-// Duo-Art register break at D#4/E4
 
-// Ampico register break at E4/F4
+//////////////////////////////
+//
+// RollOptions::setRollTypeDuoArt -- Apply settings suitable for Aeolian Duo-Art piano rolls.
+//
+// Note that the snakebite holes are somewhat narrower than the other holes,
+// and the rewind hole is wider.
+//
+// Duo-Art tracker holes:
+//
+//   9 expression/control columns on bass side (some empty):
+//       1:  Rewind (wide hole)              MIDI Key 16
+//       2:  Empty (overlaps with rewind)    MIDI Key 17
+//       3:  Soft pedal                      MIDI Key 18
+//       4:  Bass theme snakebite            MIDI Key 19
+//       5:  Bass theme snakebite            MIDI Key 20
+//       6:  Bass volume 1                   MIDI Key 21
+//       7:  Bass volume 2                   MIDI Key 22
+//       8:  Bass volume 4                   MIDI Key 23
+//       9:  Bass volume 8                   MIDI Key 24
+//   Then 80 notes from C#1 to G#7 (MIDI notes 25 to 104)
+//       10: C#1                             MIDI Key 25
+//       ...
+//       48: D#4                             MIDI Key 63
+//    Treble register:
+//       49: E4                              MIDI Key 64
+//       ...
+//       89: G#7                             MIDI Key 104
+//   9 expression columns on the treble side (some empty):
+//       90: -9:  Treble volume 8            MIDI Key 105
+//       91: -8:  Treble volume 4            MIDI Key 106
+//       92: -7:  Treble volume 2            MIDI Key 107
+//       93: -6:  Treble volume 1            MIDI Key 108
+//       94: -5:  Treble theme snakebite     MIDI Key 109
+//       95: -4:  Treble theme snakebite     MIDI Key 110
+//       96: -3:  Blank                      MIDI Key 111
+//       97: -2:  Blank                      MIDI Key 112
+//       98: -1:  Sustain         pedal      MIDI Key 113
+//		 
+
+void RollOptions::setRollTypeDuoArt(void) {
+	m_rollType = "duo-art";
+	m_minTrackerSpacingToPaperEdge = 1.6; // check
+	m_rewindHole = 1;
+	m_rewindHoleMidi = 16;
+	m_trackerHoles = 98;
+
+	m_bass_midi = 16;   // first MIDI Note on bass side of paper
+	m_treble_midi = 64; // first MIDI Note on treble side of paper
+
+	m_bassExpressionTrackStartNumberLeft = 1;
+	m_bassExpressionTrackStartMidi = 16;
+	m_bassNotesTrackStartNumberLeft = 10;
+	m_bassNotesTrackStartMidi = 25;
+
+	m_trebleNotesTrackStartNumberLeft = 49;
+	m_trebleNotesTrackStartMidi = 64;
+
+	m_trebleExpressionTrackStartNumberLeft = 90;
+	m_trebleExpressionTrackStartMidi = 105;
+
+	hasExpressionMidiFileSetup();
+}
+
+
+
+//////////////////////////////
+//
+// RollOptions::setRollTypeAmpico -- Apply settings suitable for Ampico (A) piano rolls.
+//
+// Ampico (A) tracker holes:
+//
+//   7 expression holes on the bass side:
+//       1:  Bass slow cresc                 MIDI Key 16
+//       2:  Bass intensity 2                MIDI Key 17
+//       3:  Soft pedal                      MIDI Key 18
+//       4:  Bass intensity 4                MIDI Key 19
+//       5:  Bass fast cresc                 MIDI Key 20
+//       6:  Bass intensity 6                MIDI Key 21
+//       7:  Bass intensity cancel           MIDI Key 22
+//   Then 83 notes from B0 to A7 (MIDI notes 23 to 105)
+//       8:  B0                              MIDI Key 23
+//       ...
+//       49: E4                              MIDI Key 64
+//    Treble register:
+//       50: F4                              MIDI Key 65
+//       ...
+//       90: A7                              MIDI Key 105
+//   8 expression/control holes on the treble side:
+//       91: -8:  Rewind                     MIDI Key 106
+//       92: -7:  Treble intensity cancel    MIDI Key 107
+//       93: -6:  Treble intensity 6         MIDI Key 108
+//       94: -5:  Treble fast cresc          MIDI Key 109
+//       95: -4:  Treble intensity 4         MIDI Key 110
+//       96: -3:  Sustain pedal              MIDI Key 111
+//       97: -2:  Treble intensity 2         MIDI Key 112
+//       98: -1:  Treble slow cresc          MIDI Key 113
+//		 
+
+void RollOptions::setRollTypeAmpico(void) {
+	m_rollType = "ampico";
+	m_minTrackerSpacingToPaperEdge = 1.6; // check
+	m_rewindHole = 91; // Beware of post-rewind patterns on recut rolls
+	m_rewindHoleMidi = 106;
+	m_trackerHoles = 98;
+
+	m_bass_midi = 16;   // first MIDI Note on bass side of paper
+	m_treble_midi = 65; // first MIDI Note on treble side of paper
+
+	m_bassExpressionTrackStartNumberLeft = 1;
+	m_bassExpressionTrackStartMidi = 16;
+	m_bassNotesTrackStartNumberLeft = 8;
+	m_bassNotesTrackStartMidi = 23;
+
+	m_trebleNotesTrackStartNumberLeft = 50;
+	m_trebleNotesTrackStartMidi = 65;
+
+	m_trebleExpressionTrackStartNumberLeft = 91;
+	m_trebleExpressionTrackStartMidi = 106;
+
+	hasExpressionMidiFileSetup();
+}
+
+
+
+//////////////////////////////
+//
+// RollOptions::setRollTypeAmpicoB -- Apply settings suitable for Ampico (B) piano rolls.
+//
+// Ampico (B) tracker holes:
+//
+//   8 expression holes on the bass side:
+//       1:  Amplifier trigger (B only)      MIDI Key 15
+//       2:  Unused (A only)                 MIDI Key 16
+//       3:  Bass intensity 2                MIDI Key 17
+//       4:  Soft pedal                      MIDI Key 18
+//       5:  Bass intensity 4                MIDI Key 19
+//       6:  Unused (A only)                 MIDI Key 20
+//       7:  Bass intensity 6                MIDI Key 21
+//       8:  Bass intensity cancel           MIDI Key 22
+//   Then 83 notes from B0 to A7 (MIDI notes 23 to 105)
+//       9:  B0                              MIDI Key 23
+//       ...
+//       50: E4                              MIDI Key 64
+//    Treble register:
+//       51: F4                              MIDI Key 65
+//       ...
+//       91: A7                              MIDI Key 105
+//   9 expression/control holes on the treble side:
+//       92: -9:  Rewind                     MIDI Key 106
+//       93: -8:  Treble intensity cancel    MIDI Key 107
+//       94: -7:  Treble intensity 6         MIDI Key 108
+//       95: -6:  Treble fast cresc          MIDI Key 109
+//       96: -5:  Treble intensity 4         MIDI Key 110
+//       97: -4:  Sustain pedal              MIDI Key 111
+//       98: -3:  Treble intensity 2         MIDI Key 112
+//       99: -2:  Treble slow cresc          MIDI Key 113
+//      100: -1:  Sub intensity (B only)     MIDI Key 114
+//
+
+void RollOptions::setRollTypeAmpicoB(void) {
+	m_rollType = "ampico_b";
+	m_minTrackerSpacingToPaperEdge = 1.6; // check
+	m_rewindHole = 92; // Beware of post-rewind patterns on recut rolls
+	m_rewindHoleMidi = 106;
+	m_trackerHoles = 100;
+
+	m_bass_midi = 15;   // first MIDI Note on bass side of paper
+	m_treble_midi = 65; // first MIDI Note on treble side of paper
+
+	m_bassExpressionTrackStartNumberLeft = 1;
+	m_bassExpressionTrackStartMidi = 15;
+	m_bassNotesTrackStartNumberLeft = 9;
+	m_bassNotesTrackStartMidi = 23;
+
+	m_trebleNotesTrackStartNumberLeft = 51;
+	m_trebleNotesTrackStartMidi = 65;
+
+	m_trebleExpressionTrackStartNumberLeft = 92;
+	m_trebleExpressionTrackStartMidi = 106;
+
+	hasExpressionMidiFileSetup();
+}
+
+
 
 //////////////////////////////
 //
