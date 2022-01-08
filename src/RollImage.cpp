@@ -408,6 +408,82 @@ return; // disabling for now
 
 //////////////////////////////
 //
+// RollImage::getInterHoleCutoff -- build a histogram of the distances in
+//   pixels between the end of each perforation and the start of the next in
+//   each tracker column. Smooth the histogram, then choose the distance with
+//   the smallest number items in its histogram bin that is within the average
+//   perforation width for the roll +/- the avg perforation width and assign
+//   this value (in pixels) to m_interHoleCutoff. The value can then be used in
+//   RollImage::groupHoles().
+//
+
+void RollImage::getInterHoleCutoff(void) {
+
+	int  minlen = 0;	     // minimum pixel distance to track
+	int  maxlen = 99;	     // maximum pixel distance to track
+	int  winlen = 6;         // half of sliding window-1 (in pixels) for smoothing histogram
+	double searchlen = 0.5;  // proportion of avg music hole diameter to search histogram (+/-)
+
+	vector<int> histogram(maxlen - minlen + 1, 0);
+
+	double avglen = getAverageMusicalHoleWidth();
+
+    // Build the inter-perforation distance histogram
+	for (ulongint trackerIndex=0; trackerIndex<trackerArray.size(); trackerIndex++) {
+		vector<HoleInfo*>& hi = trackerArray[trackerIndex];
+
+		if (hi.empty()) {
+			continue;
+		}
+
+		int start = hi[0]->origin.first;
+		int end = start + hi[0]->width.first;
+		int gaplen = 0;
+
+		for (ulongint i=1; i<hi.size(); i++) {
+			start = hi[i]->origin.first;
+			gaplen = start - end;
+			end = start + hi[i]->width.first;
+
+			if ((gaplen >= minlen) && (gaplen <= maxlen)) {
+				histogram[gaplen]++;
+			}
+		}
+	}
+
+	// Default to an inter-hole distance equal to the average hole diameter
+	double smallestValInWindow = -1;
+	double smallestBinInWindow = int(avglen);
+
+    // Smooth the histogram and keep track of the best candidate for the inter-
+	// hole distance seen so far
+	for (int i=0; i<(int)histogram.size(); i++) {
+		if ((i - winlen >= 0) && (i + winlen < (int)histogram.size())) {
+			double sum = 0;
+			for (int j = i - winlen; j <= i + winlen; j++) {
+				sum += histogram.at(j);
+			}
+			double total = sum / (winlen * 2 + 1);
+			total = (int(total * 10.0 + 0.5))/10.0;
+
+			if ((i > int(avglen * searchlen)) &&
+			    (i < int(avglen * (searchlen + 1.0)))) {
+				if ((smallestValInWindow == -1) or (total < smallestValInWindow)) {
+					smallestValInWindow = total;
+					smallestBinInWindow = i + minlen;
+				}
+			}
+		}
+	}
+
+	m_interHoleCutoff = (double) smallestBinInWindow;
+
+}
+
+
+
+//////////////////////////////
+//
 // RollImage::groupHoles -- Mark whether or not holes are the
 //   start of a note attack or not.  This function identifies
 //   whether or not holes should be grouped into longer virtual
@@ -422,6 +498,7 @@ return; // disabling for now
 //
 
 void RollImage::groupHoles(void) {
+	getInterHoleCutoff();
 	for (ulongint i=0; i<trackerArray.size(); i++) {
 		groupHoles(i);
 	}
@@ -430,8 +507,9 @@ void RollImage::groupHoles(void) {
 
 void RollImage::groupHoles(ulongint index) {
 	vector<HoleInfo*>& hi = trackerArray[index];
-	double scalefactor = getBridgeFactor();
-	double length = getAverageMusicalHoleWidth() * scalefactor;
+	//double scalefactor = getBridgeFactor(); // This doesn't work very well
+	//double length = getAverageMusicalHoleWidth() * scalefactor;
+	double length = m_interHoleCutoff;
 	if (hi.empty()) {
 		return;
 	}
@@ -454,7 +532,6 @@ void RollImage::groupHoles(ulongint index) {
 			lastattack = hi[i];
 		}
 	}
-
 }
 
 
