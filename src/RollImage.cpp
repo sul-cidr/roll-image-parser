@@ -152,6 +152,16 @@ void RollImage::toggleAccelerationEmulation(bool value) {
 
 //////////////////////////////
 //
+// RollImage::setAlignmentShift 
+//
+void RollImage::setAlignmentShift(int value) {
+	m_trackerMapShift = value;
+}
+
+
+
+//////////////////////////////
+//
 // RollImage::loadGreenChannel -- Load the green channel of the input image
 //   and trim at the brightness threshold for the paper/hole boundary.
 //
@@ -918,7 +928,12 @@ void RollImage::analyzeMidiKeyMapping(void) {
 	}
 
 	leftmostIndex = bestLeftIndex;
+
 	std::cerr << "After considering alternatives, leftmostIndex is now " << leftmostIndex << std::endl;	
+	if (m_trackerMapShift != 0) {
+		leftmostIndex += m_trackerMapShift;
+		std::cerr << "Applying specified shift of " << m_trackerMapShift << ", leftmostIndex is now " << leftmostIndex << std::endl;	
+	}
 
 	// Initialize the MIDI-to-track mapping:
 	midiToTrackMapping.resize(128);
