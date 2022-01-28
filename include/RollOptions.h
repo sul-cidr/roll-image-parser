@@ -54,6 +54,9 @@ class RollOptions {
 		void     setRollTypeLicenseeWelte     (void);
 		void     setRollType65Note            (void);
 		void     setRollType88Note            (void);
+		void     setRollTypeDuoArt            (void);
+		void     setRollTypeAmpico            (void);
+		void     setRollTypeAmpicoB           (void);
 
 		int      getRewindHoleBassNumber      (void);
 		int      getRewindHoleBassIndex       (void);
