@@ -4265,15 +4265,18 @@ void RollImage::generateHoleMidifile(MidiFile& midifile) {
 	string filename = getDruid();
 	if (!filename.empty()) {
 		filename += "-raw.mid";
-		string entry = "@FILENAME:\t\t";
+		string entry = "@FILENAME:\t";
 		entry += filename;
 		midifile.addText(0, 0, entry);
 	}
 
 	insertRollImageProperties(midifile);
-	midifile.addText(0, 0, "@MIDIFILE_TYPE:\t\thole");
+	midifile.addText(0, 0, "@MIDIFILE_TYPE:\thole");
 
 	setMidiFileTempo(midifile);
+	stringstream ss;
+	ss << "@TICKS_PER_QUARTER:\t" << midifile.getTPQ();
+	midifile.addText(0, 0, ss.str());
 
 	// Tracks are organized by real notes first, then expression tracks.
 	// This is so that the expression tracks can be easily thrown away
@@ -4419,15 +4422,18 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 	string filename = getDruid();
 	if (!filename.empty()) {
 		filename += ".mid";
-		string entry = "@FILENAME:\t\t";
+		string entry = "@FILENAME:\t";
 		entry += filename;
 		midifile.addText(0, 0, entry);
 	}
 
 	insertRollImageProperties(midifile);
-	midifile.addText(0, 0, "@MIDIFILE_TYPE:\t\tnote");
+	midifile.addText(0, 0, "@MIDIFILE_TYPE:\tnote");
 
 	setMidiFileTempo(midifile);
+	stringstream ss;
+	ss << "@TICKS_PER_QUARTER:\t" << midifile.getTPQ();
+	midifile.addText(0, 0, ss.str());
 
 	// These are the values to use for 300 dpi images:
 	// tempo 30 = 180
@@ -4712,104 +4718,104 @@ void RollImage::insertRollImageProperties(MidiFile& midifile) {
 #endif
 
 	stringstream ss;
-	ss << "@DRUID:\t\t\t"            << getDruid()                   << "";
+	ss << "@DRUID:\t"               << getDruid();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@ROLL_TYPE:\t\t"         << getRollType()                 << "";
+	ss << "@ROLL_TYPE:\t"           << getRollType();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@THRESHOLD:\t\t"         << getThreshold()                << "";
+	ss << "@THRESHOLD:\t"           << getThreshold();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@LENGTH_DPI:\t\t"        << getPixelsPerInch()            << "ppi";
+	ss << "@LENGTH_DPI:\t"          << getPixelsPerInch();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@IMAGE_WIDTH:\t\t"       << getCols()                     << "px";
+	ss << "@IMAGE_WIDTH:\t"         << getCols();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@IMAGE_LENGTH:\t\t"      << getRows()                     << "px";
+	ss << "@IMAGE_LENGTH:\t"        << getRows();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@ROLL_WIDTH:\t\t"        << averageRollWidth              << "px";
+	ss << "@ROLL_WIDTH:\t"          << averageRollWidth;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@HARD_MARGIN_BASS:\t"    << getHardMarginLeftWidth()      << "px";
+	ss << "@HARD_MARGIN_BASS:\t"    << getHardMarginLeftWidth();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@HARD_MARGIN_TREBLE:\t"  << getHardMarginRightWidth()     << "px";
+	ss << "@HARD_MARGIN_TREBLE:\t"  << getHardMarginRightWidth();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@MAX_BASS_DRIFT:\t"      << getSoftMarginLeftWidthMax()   << "px";
+	ss << "@MAX_BASS_DRIFT:\t"      << getSoftMarginLeftWidthMax();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@MAX_TREBLE_DRIFT:\t"    << getSoftMarginRightWidthMax()  << "px";
+	ss << "@MAX_TREBLE_DRIFT:\t"    << getSoftMarginRightWidthMax();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@AVG_SOFT_MARGIN_SUM:\t" << averageSoftMarginWidth        << "px";
+	ss << "@AVG_SOFT_MARGIN_SUM:\t" << averageSoftMarginWidth;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@DRIFT_RANGE:\t\t"       << int(driftrange*100+0.5)/100.0 << "px";
+	ss << "@DRIFT_RANGE:\t"         << int(driftrange*100+0.5)/100.0;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@DRIFT_MIN:\t\t"         << int(driftmax*100+0.5)/100.0   << "px";
+	ss << "@DRIFT_MIN:\t"           << int(driftmax*100+0.5)/100.0;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@DRIFT_MAX:\t\t"         << int(driftmin*100+0.5)/100.0   << "px";
+	ss << "@DRIFT_MAX:\t"           << int(driftmin*100+0.5)/100.0;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@PRELEADER_ROW:\t\t"     << getPreleaderIndex()           << "px";
+	ss << "@PRELEADER_ROW:\t"       << getPreleaderIndex();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@LEADER_ROW:\t\t"        << getLeaderIndex()              << "px";
+	ss << "@LEADER_ROW:\t"          << getLeaderIndex();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@FIRST_HOLE:\t\t"        << getFirstMusicHoleStart()      << "px";
+	ss << "@FIRST_HOLE:\t"          << getFirstMusicHoleStart();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@LAST_HOLE:\t\t"         << getLastMusicHoleEnd()         << "px";
+	ss << "@LAST_HOLE:\t"           << getLastMusicHoleEnd();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@END_MARGIN:\t\t"        << getRows() - getLastMusicHoleEnd() << "px";
+	ss << "@END_MARGIN:\t"          << getRows() - getLastMusicHoleEnd();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@MUSICAL_LENGTH:\t"      << musiclength                   << "px";
+	ss << "@MUSICAL_LENGTH:\t"      << musiclength;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@MUSICAL_HOLES:\t\t"     << holes.size()                  << "";
+	ss << "@MUSICAL_HOLES:\t"       << holes.size();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@MUSICAL_NOTES:\t\t"     << musicnotecount                << "";
+	ss << "@MUSICAL_NOTES:\t"       << musicnotecount;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@AVG_HOLE_WIDTH:\t"      << avgholewidth                  << "px";
+	ss << "@AVG_HOLE_WIDTH:\t"      << avgholewidth;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@ANTIDUST_COUNT:\t"      << antidust.size()               << "";
+	ss << "@ANTIDUST_COUNT:\t"      << antidust.size();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@BAD_HOLE_COUNT:\t"      << badHoles.size()               << "";
+	ss << "@BAD_HOLE_COUNT:\t"      << badHoles.size();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@EDGE_TEAR_COUNT:\t"     << trebleTears.size() + bassTears.size() << "";
+	ss << "@EDGE_TEAR_COUNT:\t"     << trebleTears.size() + bassTears.size();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@BASS_TEAR_COUNT:\t"     << bassTears.size()              << "";
+	ss << "@BASS_TEAR_COUNT:\t"     << bassTears.size();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@TREBLE_TEAR_COUNT:\t"   << trebleTears.size()            << "";
+	ss << "@TREBLE_TEAR_COUNT:\t"   << trebleTears.size();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@DUST_SCORE:\t\t"        << int(getDustScore()+0.5)       << "ppm";
+	ss << "@DUST_SCORE:\t"          << int(getDustScore()+0.5) << " ppm";
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@DUST_SCORE_BASS:\t"     << int(getDustScoreBass()+0.5)   << "ppm";
+	ss << "@DUST_SCORE_BASS:\t"     << int(getDustScoreBass()+0.5) << " ppm";
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@DUST_SCORE_TREBLE:\t"   << int(getDustScoreTreble()+0.5) << "ppm";
+	ss << "@DUST_SCORE_TREBLE:\t"   << int(getDustScoreTreble()+0.5) << " ppm";
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@SHIFTS:\t\t"            << shifts.size()                 << "";
+	ss << "@SHIFTS:\t"              << shifts.size();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@HOLE_SEPARATION:\t"     << holeSeparation                << "px";
+	ss << "@HOLE_SEPARATION:\t"     << holeSeparation;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@HOLE_OFFSET:\t\t"       << holeOffset                    << "px";
+	ss << "@HOLE_OFFSET:\t"         << holeOffset;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@TRACKER_HOLES:\t\t"     << trackerholes                  << "";
+	ss << "@TRACKER_HOLES:\t"       << trackerholes;
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@HOLE_SOFTWARE:\t\t"     << "https://github.com/pianoroll/roll-image-parser" << "";
+	ss << "@HOLE_SOFTWARE:\t"       << "https://github.com/pianoroll/roll-image-parser";
 	midifile.addText(0, 0, ss.str()); ss.str("");
 
-	ss << "@SOFTWARE_DATE:\t\t"     << __DATE__ << " " << __TIME__   << "";
+	ss << "@SOFTWARE_DATE:\t"       << __DATE__ << " " << __TIME__;
 	string sss = ss.str();
 	sss = ss.str();
 	sss.erase(remove(sss.begin(), sss.end(), '\n'), sss.end());
 	midifile.addText(0, 0, sss); ss.str("");
 
 #ifndef DONOTUSEFFT
-	ss << "@ANALYSIS_DATE:\t\t"     << std::ctime(&current_time);
+	ss << "@ANALYSIS_DATE:\t"       << std::ctime(&current_time);
 	sss = ss.str();
 	sss = ss.str();
 	sss.erase(remove(sss.begin(), sss.end(), '\n'), sss.end());
 	midifile.addText(0, 0, sss); ss.str("");
 
-	ss << "@ANALYSIS_TIME:\t\t"     << int(processing_time.count()*100.0+0.5)/100.0 << "sec" << "";
+	ss << "@ANALYSIS_TIME:\t"       << int(processing_time.count()*100.0+0.5)/100.0 << "sec";
 	midifile.addText(0, 0, ss.str()); ss.str("");
 #endif
-	ss << "@COLOR_CHANNEL:\t\t"     << "green"                       << "";
+	ss << "@COLOR_CHANNEL:\t"       << "green";
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@CHANNEL_MD5:\t\t"       << getDataMD5Sum()               << "";
+	ss << "@CHANNEL_MD5:\t"         << getDataMD5Sum();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@BRIDGE_FACTOR:\t\t"     << getBridgeFactor()             << "";
+	ss << "@BRIDGE_FACTOR:\t"       << getBridgeFactor();
 	midifile.addText(0, 0, ss.str()); ss.str("");
-	ss << "@MANUAL_EDITS:\t\t"      << "no "                         << "";
+	ss << "@MANUAL_EDITS:\t"        << "no";
 	midifile.addText(0, 0, ss.str()); ss.str("");
 }
 
