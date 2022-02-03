@@ -157,7 +157,7 @@ void RollImage::toggleAccelerationEmulation(bool value) {
 //
 void RollImage::setAlignmentShift(int value) {
 	m_trackerMapShift = value;
-
+}
 
 
 //////////////////////////////
