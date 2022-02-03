@@ -91,6 +91,7 @@ class RollImage : public TiffFile, public RollOptions {
 		void	        setMonochrome                 (bool value);
 		void            setRewindCorrection           (bool value);
 		void            toggleAccelerationEmulation   (bool value);
+		void            setMissingLeaders             (bool value);
 		void            analyze                       (void);
 		void            analyzeHoles                  (void);
 		void            mergePixelOverlay             (std::fstream& output);
@@ -345,6 +346,7 @@ class RollImage : public TiffFile, public RollOptions {
 		bool       m_isMonochrome;
 		bool       m_useRewindHoleCorrection;
 		bool       m_emulateAcceleration;
+		bool       m_leadersAreMissing;
 
 #ifndef DONOTUSEFFT
 		std::chrono::system_clock::time_point start_time;

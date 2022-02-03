@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
 	options.define("5|65|65-note|65-hole=b", "Assume 65-note roll");
 	options.define("8|88|88-note|88-hole=b", "Assume 88-note roll");
 	options.define("t|threshold=i:249", "Brightness threshold for hole/paper separation");
+	options.define("n|no-leaders=b", "Roll image has no tapered leader/preleader sections before holes");
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 2) {
@@ -79,6 +80,10 @@ int main(int argc, char** argv) {
 		cerr << "   --65 == for 65-note rolls"     << endl;
 		cerr << "   --88 == for 88-note rolls"     << endl;
 		exit(1);
+	}
+
+	if (options.getBoolean("no-leaders")) {
+		roll.setMissingLeaders(true);
 	}
 
 	fstream output;
