@@ -519,8 +519,8 @@ void RollImage::groupHoles(void) {
 void RollImage::groupHoles(ulongint index) {
 	vector<HoleInfo*>& hi = trackerArray[index];
 	//double scalefactor = getBridgeFactor(); // This doesn't work very well
-	//double length = getAverageMusicalHoleWidth() * scalefactor;
 	double length = m_interHoleCutoff;
+	//double length = getAverageMusicalHoleWidth() * scalefactor;
 	if (hi.empty()) {
 		return;
 	}
@@ -531,7 +531,7 @@ void RollImage::groupHoles(ulongint index) {
 	lastattack = hi[0];
 	for (ulongint i=1; i<hi.size(); i++) {
 		hi[i]->prevOff = hi[i]->origin.first - (hi[i-1]->origin.first + hi[i-1]->width.first);
-		if (hi[i]->prevOff <= m_interHoleCutoff) {
+		if (hi[i]->prevOff <= length) {
 			hi[i]->attack = false;
 			if (lastattack) {
 				// extend off time of previous attack
