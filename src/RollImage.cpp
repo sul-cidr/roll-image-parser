@@ -1314,6 +1314,7 @@ void RollImage::storeCorrectedCentroidHistogram(void) {
 
 void RollImage::analyzeTrackerBarSpacing(void) {
 
+	// XXX These values aren't used anywhere
 	ulongint leftside  = getHardMarginLeftIndex();
 	ulongint rightside = getHardMarginRightIndex();
 	ulongint width     = rightside - leftside;
@@ -1350,28 +1351,63 @@ void RollImage::analyzeTrackerBarSpacing(void) {
 		}
 	}
 
-	double y1 = magnitudeSpectrum.at(maxmagi-1);
-	double y2 = magnitudeSpectrum.at(maxmagi);
-	double y3 = magnitudeSpectrum.at(maxmagi+1);
+	// Max image width is 4096 pixels; can't expect fewer than 65 tracker holes
+	// (4096/64 = 64)
+	int maxDistance = 64;
+	vector<double> distanceMagnitudes(maxDistance * 100);
+	distanceMagnitudes.at(0) = 0;
+	// Hopefully hundredths of an inch will be sufficient precision
+	for (float f=0.01; f < maxDistance; f += .01) {
+		ulongint magIndex = ulongint(4096.0 * factor / f);
+		if (magIndex >= magnitudeSpectrum.size()) {
+			distanceMagnitudes.at(int(f * 100)) = 0;
+			continue;
+		}
+		distanceMagnitudes.at(int(f * 100.0)) = magnitudeSpectrum.at(magIndex);
+	}
 
-	double estimate = 4096.0 * factor / maxmagi;
-	double b = (y3 - y2)/2.0;
-	double a = y1/2.0 - y2 + y3/2.0;
-	double newi = -b / 2 / a / factor ;
+	// Smooth the frequency magnitude values for inter-column distances. In
+	// rare cases, there can be a narrow spike on a multiple of the true
+	// fundamental frequency (which tends to have a broader peak) that exceeds
+	// the fundamental's magnitude. Applying a simple sliding-window smoothing
+	// process serves to flatten out these spurious spikes, and also replaces
+	// the peak-averaging code that is commented out below.
+	vector<double> smoothedDistanceMagnitudes(distanceMagnitudes.size());
+	int windowLength = 16;
+	int maxsmoothi = 0;
+	for (int i=0; i<(int)distanceMagnitudes.size(); i++) {
+		if ((i - windowLength < 0) || (i + windowLength >= (int)distanceMagnitudes.size())) {
+			smoothedDistanceMagnitudes.at(i) = 0;
+		} else {
+			double sum = 0;
+			for (int j = i - windowLength; j <= i + windowLength; j++) {
+				sum += distanceMagnitudes.at(j);
+			}
+			double total = sum / (windowLength * 2 + 1);
+			smoothedDistanceMagnitudes.at(i) = (int(total * 10.0 + 0.5))/10.0;
+		}
+		if (smoothedDistanceMagnitudes.at(i) > smoothedDistanceMagnitudes.at(maxsmoothi)) {
+			maxsmoothi = i;
+		}
+	}
 
-	// cerr << "PIXEL SEPARATION: " << estimate << " pixels\n";
-	// cerr << "REFINED PIXEL SEPARATION: " << newi << " pixels\n";
-	// cerr << "FINAL ANSWER: " << (estimate + newi) << " pixels\n";
+	// double y1 = magnitudeSpectrum.at(maxmagi-1);
+	// double y2 = magnitudeSpectrum.at(maxmagi);
+	// double y3 = magnitudeSpectrum.at(maxmagi+1);
 
-	holeSeparation = estimate + newi;
+	// double estimate = 4096.0 * factor / maxmagi;
+	// double b = (y3 - y2)/2.0;
+	// double a = y1/2.0 - y2 + y3/2.0;
+	// double newi = -b / 2 / a / factor ;
+
+	// holeSeparation = estimate + newi;
+
+	holeSeparation = float(maxsmoothi) / 100.0;
+
 #else
-	holeSeparation = 37.5;    /* for 8 holes/inch */
+	holeSeparation = 37.5;    // for 8 holes/inch
+	// holeSeparation = 33.3772;    // for 9 holes/inch
 #endif /* DONOTUSEFFT */
-
-	// cerr << "\n\nspectrum:\n";
-	// for (ulongint i=0; i<spectrum.size(); i++) {
-	// 	cerr << spectrum[i].first << "\t" << spectrum[i].second << endl;
-	// }
 
 }
 
