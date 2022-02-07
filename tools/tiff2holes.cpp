@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
 	options.define("m|monochrome=b", "Input image is a monochrome (single-channel) TIFF");
 	options.define("s|disregard-rewind-hole=b", "Skip rewind hole correction for tracker->MIDI mapping");
 	options.define("e|emulate-roll-acceleration=b", "Add tempo events to note MIDI for acceleration");
+	options.define("i|alignment-shift=i:0", "Shift leftmost valid position for tracker->MIDI mapping");
 	options.process(argc, argv);
 
 	if (options.getArgCount() != 1) {
@@ -101,10 +102,13 @@ int main(int argc, char** argv) {
 
 	int threshold = options.getInteger("threshold");
 
+	int trackerShift = options.getInteger("alignment-shift");
+
 	roll.setDebugOn();
 	roll.setWarningOn();
 	roll.setMonochrome(options.getBoolean("monochrome"));
 	roll.loadGreenChannel(threshold);
+	roll.setAlignmentShift(trackerShift);
 	roll.analyze();
 	roll.printRollImageProperties();
 
