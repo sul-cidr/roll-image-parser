@@ -401,10 +401,10 @@ return; // disabling for now
 // RollImage::getInterHoleCutoff -- Build a histogram of the distances in
 //   pixels between the end of each perforation and the start of the next in
 //   each tracker column. Smooth the histogram, then choose the distance with
-//   the smallest number items in its histogram bin that is within the average
+//   the smallest number of items in its histogram bin that is within the average
 //   perforation width for the roll +/- (searchlen * the avg perforation width)
 //   and assign this value (in pixels) to m_interHoleCutoff. The value can
-//   then be used in RollImage::groupHoles() to merge continutation holes
+//   then be used in RollImage::groupHoles() to merge continuation holes
 //   (which are recorded individually in the raw MIDI output) into continuous
 //   note events in the note MIDI output.
 //
@@ -420,7 +420,7 @@ void RollImage::getInterHoleCutoff(void) {
 
 	double avglen = getAverageMusicalHoleWidth();
 
-    // Build the inter-perforation distance histogram
+	// Build the inter-perforation distance histogram
 	for (ulongint trackerIndex=0; trackerIndex<trackerArray.size(); trackerIndex++) {
 		vector<HoleInfo*>& hi = trackerArray[trackerIndex];
 
@@ -447,7 +447,7 @@ void RollImage::getInterHoleCutoff(void) {
 	double smallestValInWindow = -1;
 	double smallestBinInWindow = int(avglen);
 
-    // Smooth the histogram and keep track of the best candidate for the inter-
+	// Smooth the histogram and keep track of the best candidate for the inter-
 	// hole distance seen so far
 	for (int i=0; i<(int)histogram.size(); i++) {
 		if ((i - winlen >= 0) && (i + winlen < (int)histogram.size())) {
@@ -499,8 +499,8 @@ void RollImage::groupHoles(void) {
 
 void RollImage::groupHoles(ulongint index) {
 	vector<HoleInfo*>& hi = trackerArray[index];
-	//double scalefactor = getBridgeFactor(); // This doesn't work very well
-	//double length = getAverageMusicalHoleWidth() * scalefactor;
+	// double scalefactor = getBridgeFactor(); // This doesn't work very well
+	// double length = getAverageMusicalHoleWidth() * scalefactor;
 	if (hi.empty()) {
 		return;
 	}
