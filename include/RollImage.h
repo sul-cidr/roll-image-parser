@@ -87,8 +87,8 @@ class RollImage : public TiffFile, public RollOptions {
 		                 RollImage                    (void);
 		                ~RollImage                    ();
 
-		void	        loadGreenChannel              (int threshold);
-		void	        setMonochrome                 (bool value);
+		void	          loadGreenChannel              (int threshold);
+		void	          setMonochrome                 (bool value);
 		void            setRewindCorrection           (bool value);
 		void            toggleAccelerationEmulation   (bool value);
 		void            analyze                       (void);
@@ -142,7 +142,7 @@ class RollImage : public TiffFile, public RollOptions {
 		void            generateNoteMidiFileBinasc    (ostream& output);
 		void            generateHoleMidiFileHex       (ostream& output);
 		void            generateHoleMidiFileBinasc    (ostream& output);
-		void			setAlignmentShift			  (int trackerShift);
+		void            setAlignmentShift             (int trackerShift);
 
 #ifndef DONOTUSEFFT
 		void            generateMidifile              (MidiFile& midifile);
