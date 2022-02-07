@@ -67,6 +67,7 @@ void RollImage::clear(void) {
 	m_isMonochrome              = false;
 	m_useRewindHoleCorrection   = true;
 	m_emulateAcceleration       = false;
+	m_leadersAreMissing         = false;
 }
 
 
@@ -156,6 +157,16 @@ void RollImage::toggleAccelerationEmulation(bool value) {
 //
 void RollImage::setAlignmentShift(int value) {
 	m_trackerMapShift = value;
+}
+
+
+
+//////////////////////////////
+//
+// RollImage::setMissingLeaders
+//
+void RollImage::setMissingLeaders(bool value) {
+	m_leadersAreMissing = value;
 }
 
 
@@ -2900,8 +2911,8 @@ void RollImage::analyzeLeaders(void) {
 		// eventually, perhaps reverse processing.
 		std::cerr << "Cannot deal with bottom leader" << std::endl;
 		exit(1);
-	} else {
-		std::cerr << "Cannot find leader (deal with partial rolls later)." << std::endl;
+	} else if (!m_leadersAreMissing) {
+		std::cerr << "Cannot find leader (try -n option)." << std::endl;
 		std::cerr << "TOP LEFT SHOULD BE GREATER THAN BOTTOM LEFT:" << std::endl;
 		std::cerr << "   TOP    LEFT  AVERAGE " << topLeftAvg << std::endl;
 		std::cerr << "   BOTTOM LEFT  AVERAGE " << botLeftAvg << std::endl;
@@ -2912,17 +2923,21 @@ void RollImage::analyzeLeaders(void) {
 	}
 
 	ulongint leftLeaderBoundary = 0;
-	leftLeaderBoundary = findLeftLeaderBoundary(leftMarginIndex, botLeftAvg, cols, 4096*4);
-
 	ulongint rightLeaderBoundary = 0;
-	rightLeaderBoundary = findRightLeaderBoundary(rightMarginIndex, botRightAvg, cols, 4096*4);
+	ulongint leaderBoundary = 0;
+	ulongint preleaderIndex = 0;
 
-	ulongint leaderBoundary = (leftLeaderBoundary + rightLeaderBoundary) / 2;
+	if (!m_leadersAreMissing) {
+		leftLeaderBoundary = findLeftLeaderBoundary(leftMarginIndex, botLeftAvg, cols, 4096*4);
+		rightLeaderBoundary = findRightLeaderBoundary(rightMarginIndex, botRightAvg, cols, 4096*4);
+		leaderBoundary = (leftLeaderBoundary + rightLeaderBoundary) / 2;
+		preleaderIndex = extractPreleaderIndex(leaderBoundary);
+	}
+
 	setLeaderIndex(leaderBoundary);
 	markLeaderRegion();
-
 	// find pre-leader region
-	setPreleaderIndex(extractPreleaderIndex(leaderBoundary));
+	setPreleaderIndex(preleaderIndex);
 	markPreleaderRegion();
 
 	m_analyzedLeaders = true;

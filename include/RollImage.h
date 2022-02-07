@@ -91,6 +91,7 @@ class RollImage : public TiffFile, public RollOptions {
 		void	          setMonochrome                 (bool value);
 		void            setRewindCorrection           (bool value);
 		void            toggleAccelerationEmulation   (bool value);
+		void            setMissingLeaders             (bool value);
 		void            analyze                       (void);
 		void            analyzeHoles                  (void);
 		void            mergePixelOverlay             (std::fstream& output);
@@ -353,6 +354,7 @@ class RollImage : public TiffFile, public RollOptions {
 		// calculated by analyzeMidiKeyMapping() but can be modified via this
 		// value, which is set from the command line.
 		int        m_trackerMapShift = 0;
+		bool       m_leadersAreMissing;
 
 #ifndef DONOTUSEFFT
 		std::chrono::system_clock::time_point start_time;
