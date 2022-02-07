@@ -39,7 +39,7 @@ class HoleInfo {
 		         HoleInfo     (void);
 		        ~HoleInfo     ();
 
-		std::pair<ulongint, ulongint> origin;   // Row, Column of origin (top let corner)
+		std::pair<ulongint, ulongint> origin;   // Row, Column of origin (top left corner)
 		std::pair<ulongint, ulongint> width;    // Row, Column widths.
 		std::pair<double, double>     centroid; // Center of mass
 		std::pair<ulongint, ulongint> entry;    // entry point for filling holes
