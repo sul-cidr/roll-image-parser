@@ -2906,10 +2906,10 @@ void RollImage::analyzeLeaders(void) {
 
 	if ((topLeftAvg > botLeftAvg) && (topRightAvg < botRightAvg)) {
 		// do nothing, everything is as expected
-	} else if ((topLeftAvg < botLeftAvg) && (topRightAvg > botRightAvg)) {
+	} else if ((topLeftAvg < botLeftAvg) && (topRightAvg > botRightAvg) && !m_leadersAreMissing) {
 		// leader is on the bottom of the image, so don't continue processing
 		// eventually, perhaps reverse processing.
-		std::cerr << "Cannot deal with bottom leader" << std::endl;
+		std::cerr << "Cannot deal with bottom leader (try -n option)" << std::endl;
 		exit(1);
 	} else if (!m_leadersAreMissing) {
 		std::cerr << "Cannot find leader (try -n option)." << std::endl;
