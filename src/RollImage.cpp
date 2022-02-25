@@ -441,6 +441,13 @@ void RollImage::getInterHoleCutoff(void) {
 
 	double avglen = getAverageMusicalHoleWidth();
 
+	// The artificially constructed matrix for 88-note rolls seems to ensure
+	// that the intra-continuation distance is always < the avg hole diameter
+	if (m_rollType == "88-note") {
+		m_interHoleCutoff = avglen;
+		return;
+	}
+
 	// Build the inter-perforation distance histogram
 	for (ulongint trackerIndex=0; trackerIndex<trackerArray.size(); trackerIndex++) {
 		vector<HoleInfo*>& hi = trackerArray[trackerIndex];
