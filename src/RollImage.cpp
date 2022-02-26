@@ -441,13 +441,6 @@ void RollImage::getInterHoleCutoff(void) {
 
 	double avglen = getAverageMusicalHoleWidth();
 
-	// The artificially constructed matrix for 88-note rolls seems to ensure
-	// that the intra-continuation distance is always < the avg hole diameter
-	if (m_rollType == "88-note") {
-		m_interHoleCutoff = avglen;
-		return;
-	}
-
 	// Build the inter-perforation distance histogram
 	for (ulongint trackerIndex=0; trackerIndex<trackerArray.size(); trackerIndex++) {
 		vector<HoleInfo*>& hi = trackerArray[trackerIndex];
@@ -527,10 +520,21 @@ void RollImage::groupHoles(void) {
 
 void RollImage::groupHoles(ulongint index) {
 	vector<HoleInfo*>& hi = trackerArray[index];
-	// double scalefactor = getBridgeFactor(); // This doesn't work very well
-	// double length = getAverageMusicalHoleWidth() * scalefactor;
+	
 	if (hi.empty()) {
 		return;
+	}
+	
+	double length = m_interHoleCutoff;
+
+	// The older approach of using an inter-perforation cutoff distance that is
+	// simply the average hole width multiplied by an arbitrary scale factor
+	// works better for some roll types than the cutoff calculated by observing
+	// the smoothed inter-hole distances for the roll -- specifically for
+	// 88-note rolls, which are constructed artificially and are likely to have
+	// a more predictable hole matrix spacing.
+	if (m_rollType == "88-note") {
+	    length = getAverageMusicalHoleWidth() * getBridgeFactor();
 	}
 
 	HoleInfo* lastattack = NULL;
@@ -539,7 +543,7 @@ void RollImage::groupHoles(ulongint index) {
 	lastattack = hi[0];
 	for (ulongint i=1; i<hi.size(); i++) {
 		hi[i]->prevOff = hi[i]->origin.first - (hi[i-1]->origin.first + hi[i-1]->width.first);
-		if (hi[i]->prevOff <= m_interHoleCutoff) {
+		if (hi[i]->prevOff <= length) {
 			hi[i]->attack = false;
 			if (lastattack) {
 				// extend off time of previous attack
