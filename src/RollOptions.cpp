@@ -697,7 +697,13 @@ void RollOptions::setRollType65Note(void) {
 	m_trebleExpressionTrackStartNumberLeft = 0;
 	m_trebleExpressionTrackStartMidi = 0;
 
-	hasNoExpressionMidiFileSetup();
+        // Including expression tracks for 65-note rolls fits better with the
+        // Pianolatron workflow, which requires that an expressive MIDI file
+        // be generated for each roll, even if it has no expression holes.
+        // This produces slightly odd-looking note and expressive MIDI files
+        // for 65-note rolls, but does no actual harm.
+	//hasNoExpressionMidiFileSetup();
+	hasExpressionMidiFileSetup();
 }
 
 
