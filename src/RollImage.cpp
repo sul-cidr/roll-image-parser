@@ -531,9 +531,9 @@ void RollImage::groupHoles(ulongint index) {
 	// simply the average hole width multiplied by an arbitrary scale factor
 	// works better for some roll types than the cutoff calculated by observing
 	// the smoothed inter-hole distances for the roll -- specifically for
-	// 88-note rolls, which are constructed artificially and are likely to have
-	// a more predictable hole matrix spacing.
-	if (m_rollType == "88-note") {
+	// 88-note rolls and 65-note rolls, which are constructed artificially and
+	// should have more predictable punch matrix spacings.
+	if ((m_rollType == "88-note") || (m_rollType == "65-note")) {
 	    length = getAverageMusicalHoleWidth() * getBridgeFactor();
 	}
 
