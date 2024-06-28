@@ -422,8 +422,8 @@ void RollOptions::setRollTypeGreenWelte(void) {
 //       4:  Bass Crescendo on               MIDI Key 19
 //       5:  Bass Sforzando off              MIDI Key 20
 //       6:  Bass Sforzando on               MIDI Key 21
-//       7:  Soft pedal on                   MIDI Key 22
-//       8:  Soft pedal off                  MIDI Key 23
+//       7:  Soft pedal off                  MIDI Key 22
+//       8:  Soft pedal on                   MIDI Key 23
 //   Then 80 notes from C1 to G7 (MIDI notes 24 to 103)
 //       9:  C1                              MIDI Key 24
 //       ...
