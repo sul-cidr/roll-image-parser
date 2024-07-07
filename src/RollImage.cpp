@@ -984,7 +984,7 @@ void RollImage::analyzeMidiKeyMapping(void) {
 	//        holes, whichever comes first
 	// End: The last column with holes - the expected number of tracker holes,
 	//      or the leftmost column with holes, whichever comes last
-	int bestLeftIndex = leftmostIndex;
+	int bestLeftIndex = firstColumnIndex;
 	int mostHolesCovered = 0;
 	int holesInSpan = 0;
 	for (int j=0; j<m_trackerHoles; j++) {
@@ -2086,7 +2086,7 @@ void RollImage::analyzeShifts(void) {
 	std::vector<bool> stableRight(rows, true);
 	std::vector<double> fwidths(rows, 0.0);  // fast (now raw) width of paper
 	std::vector<double> swidths(rows, 0.0);  // slow width of paper
-	double sum = 0.0;
+	// double sum = 0.0;
 	int counter = 0;
 	for (ulongint r=0; r<rows; r++) {
 		double fwidth = fastRight[r] - fastLeft[r];
@@ -2099,7 +2099,7 @@ void RollImage::analyzeShifts(void) {
 		} else {
 			if (r > 10000) {
 				// don't look at leader
-				sum += swidth;
+				// sum += swidth;
 				counter++;
 			}
 		}
