@@ -968,11 +968,11 @@ void RollImage::analyzeMidiKeyMapping(void) {
 	// columns
 	int detectedColumns = lastColumnIndex - firstColumnIndex + 1;
 
-	std::cerr << "Leftmost position index with holes: " << firstColumnIndex << std::endl;
-	std::cerr << "Rightmost position index with holes: " << lastColumnIndex << std::endl;
+	std::cerr << "Leftmost position index with holes: " << firstColumnIndex << " " << position[firstColumnIndex] << "px" << std::endl;
+	std::cerr << "Rightmost position index with holes: " << lastColumnIndex << " " << position[lastColumnIndex] << "px" << std::endl;
 
     if (detectedColumns != m_trackerHoles) {
-		std::cerr << "WARNING: expected " << m_trackerHoles << " tracker holes, found " << detectedColumns << std::endl;
+		std::cerr << "WARNING: expected " << m_trackerHoles << " tracker columns, found " << detectedColumns << std::endl;
 	}
 
 	// Scan all plausible windows of m_trackerHoles columns to see if there is
@@ -984,7 +984,7 @@ void RollImage::analyzeMidiKeyMapping(void) {
 	//        holes, whichever comes first
 	// End: The last column with holes - the expected number of tracker holes,
 	//      or the leftmost column with holes, whichever comes last
-	int bestLeftIndex = firstColumnIndex;
+	int bestLeftIndex = leftmostIndex;
 	int mostHolesCovered = 0;
 	int holesInSpan = 0;
 	for (int j=0; j<m_trackerHoles; j++) {
