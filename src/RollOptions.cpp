@@ -741,8 +741,8 @@ void RollOptions::setRollType65Note(void) {
 void RollOptions::setRollType88Note(void) {
 	m_rollType = "88-note";
 	m_bridgeFactor  = 0.85;
-	m_minTrackerSpacingToPaperEdge = 1.6;
-	m_rewindHole = 0;  // no rewind hole (but can be at position 2, MIDI 16)
+	m_minTrackerSpacingToPaperEdge = 1.3; // previously 1.6
+	m_rewindHole = 0;  // no rewind hole (but can be at position 1, MIDI 16)
 	m_rewindHoleMidi = 0;
 	m_trackerHoles = 100;
 
@@ -756,7 +756,7 @@ void RollOptions::setRollType88Note(void) {
 	// treble side).
 	m_treble_midi = 114; // first MIDI note/expression on treble side of paper
 
-	// bass expression (not really used except for pedal)
+	// bass expression (sustain pedal and snakebite accents)
 	m_bassExpressionTrackStartNumberLeft = 1;
 	m_bassExpressionTrackStartMidi = 15;
 	m_bassNotesTrackStartNumberLeft = 7;

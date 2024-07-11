@@ -968,11 +968,11 @@ void RollImage::analyzeMidiKeyMapping(void) {
 	// columns
 	int detectedColumns = lastColumnIndex - firstColumnIndex + 1;
 
-	std::cerr << "Leftmost position index with holes: " << firstColumnIndex << std::endl;
-	std::cerr << "Rightmost position index with holes: " << lastColumnIndex << std::endl;
+	std::cerr << "Leftmost position index with holes: " << firstColumnIndex << " " << position[firstColumnIndex] << "px" << std::endl;
+	std::cerr << "Rightmost position index with holes: " << lastColumnIndex << " " << position[lastColumnIndex] << "px" << std::endl;
 
     if (detectedColumns != m_trackerHoles) {
-		std::cerr << "WARNING: expected " << m_trackerHoles << " tracker holes, found " << detectedColumns << std::endl;
+		std::cerr << "WARNING: expected " << m_trackerHoles << " tracker columns, found " << detectedColumns << std::endl;
 	}
 
 	// Scan all plausible windows of m_trackerHoles columns to see if there is
@@ -2086,7 +2086,7 @@ void RollImage::analyzeShifts(void) {
 	std::vector<bool> stableRight(rows, true);
 	std::vector<double> fwidths(rows, 0.0);  // fast (now raw) width of paper
 	std::vector<double> swidths(rows, 0.0);  // slow width of paper
-	double sum = 0.0;
+	// double sum = 0.0;
 	int counter = 0;
 	for (ulongint r=0; r<rows; r++) {
 		double fwidth = fastRight[r] - fastLeft[r];
@@ -2099,7 +2099,7 @@ void RollImage::analyzeShifts(void) {
 		} else {
 			if (r > 10000) {
 				// don't look at leader
-				sum += swidth;
+				// sum += swidth;
 				counter++;
 			}
 		}
