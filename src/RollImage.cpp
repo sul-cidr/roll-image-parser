@@ -1085,6 +1085,7 @@ void RollImage::invalidateEdgeHoles(void) {
 	ulongint maxtrack = midiToTrackMapping[maxmidi];
 
 	ulongint maxwidth = int(holeSeparation * getMaxHoleTrackerWidth() + 0.5);
+	cerr << "MAX TRACKER WIDTH " << maxwidth << std::endl; 
 
 	for (ulongint i=0; i<holes.size(); i++) {
 		if (holes[i]->track == 0) {
@@ -3546,7 +3547,9 @@ void RollImage::recalculateFirstMusicHole(void) {
 	ulongint nextMusicRow = minrow;
 	for (ulongint i=0; i<ta.size(); i++) {
 		for (ulongint j=0; j<ta[i].size(); j++) {
-			if (!ta[i][j]->isMusicHole()) {
+			// PMB: "Bad" holes no are excluded from the note MIDI, so don't
+			// use them here.
+			if ((!ta[i][j]->isMusicHole()) || (!ta[i][j]->reason.empty())) {
 				continue;
 			}
 			row = ta[i][j]->origin.first;
@@ -3912,10 +3915,17 @@ double RollImage::getAverageMusicalHoleWidth(void) {
 		return 0.0;
 	}
 	double sum = 0.0;
+	int legitHoles = 0;
 	for (ulongint i=0; i<holes.size(); i++) {
+		// Be sure not to count suspicously wide holes
+		if (holes[i]->reason == "wide") {
+			continue;
+		}
+		legitHoles += 1;
 		sum += holes[i]->width.second;
 	}
-	m_averageHoleWidth = sum / holes.size();
+	m_averageHoleWidth = sum / legitHoles;
+
 	return m_averageHoleWidth;
 }
 
@@ -4703,6 +4713,13 @@ void RollImage::generateMidifile(MidiFile& midifile) {
 		if (!holes[i]->attack) {
 			continue;
 		}
+		// PMB Remove all bad holes from the note (and therefore expression) MIDI.
+		// This risks removing some valid holes, but the reduced spurious notes
+		// may be worth the tradeoff.
+		if (!holes[i]->reason.empty()) {
+			continue;
+		}
+
 		HoleInfo* hi = holes[i];
 		key = hi->midikey;
 
@@ -4894,6 +4911,8 @@ void RollImage::insertRollImageProperties(MidiFile& midifile) {
 	ss << "@IMAGE_LENGTH:\t"        << getRows();
 	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@ROLL_WIDTH:\t"          << averageRollWidth;
+	midifile.addText(0, 0, ss.str()); ss.str("");
+	ss << "@INTER_HOLE_CUTOFF::\t"  << m_interHoleCutoff;
 	midifile.addText(0, 0, ss.str()); ss.str("");
 	ss << "@HARD_MARGIN_BASS:\t"    << getHardMarginLeftWidth();
 	midifile.addText(0, 0, ss.str()); ss.str("");
@@ -5129,6 +5148,7 @@ std::ostream& RollImage::printRollImageProperties(std::ostream& out) {
 	out << "@IMAGE_WIDTH:\t\t"       << getCols()                     << "px\n";
 	out << "@IMAGE_LENGTH:\t\t"      << getRows()                     << "px\n";
 	out << "@ROLL_WIDTH:\t\t"        << averageRollWidth              << "px\n";
+	out << "@INTER_HOLE_CUTOFF:\t\t" << m_interHoleCutoff             << "px\n";
 	out << "@HARD_MARGIN_BASS:\t"    << getHardMarginLeftWidth()      << "px\n";
 	out << "@HARD_MARGIN_TREBLE:\t"  << getHardMarginRightWidth()     << "px\n";
 	out << "@MAX_BASS_DRIFT:\t"      << getSoftMarginLeftWidthMax()   << "px\n";
