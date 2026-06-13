@@ -34,7 +34,7 @@ GNU make must be installed, and gcc version 4.9 or higher (or most versions of c
 
 ## tiff2holes
 
-The tiff2holes toll is a optical hole recognition (OHR) program used to identify musical holes in an image of a piano roll.  The input is an uncompressed TIFF image, and the output is a [textual analysis report](https://github.com/pianoroll/roll-image-parser/blob/master/example/gg384dv5303.txt) described below.  Extracted MIDI data files are also embedded in the output from tiff2hole.
+The tiff2holes tool is a optical hole recognition (OHR) program used to identify musical holes in an image of a piano roll.  The input is an uncompressed TIFF image, and the output is a [textual analysis report](https://github.com/pianoroll/roll-image-parser/blob/master/example/gg384dv5303.txt) described below.  Extracted MIDI data files are also embedded in the output from tiff2hole.
 
 ### Extracted parameters
 
